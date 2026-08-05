@@ -1,0 +1,515 @@
+ticker,name,exchange,sector,cap_eok,type
+MMM,3M,US,Industrials,929500,stock
+AOS,A. O. Smith,US,Industrials,71500,stock
+ABT,Abbott Laboratories,US,Health Care,1930500,stock
+ABBV,AbbVie,US,Health Care,4647500,stock
+ACN,Accenture,US,Information Technology,1072500,stock
+ADBE,Adobe Inc.,US,Information Technology,1072500,stock
+AMD,Advanced Micro Devices,US,Information Technology,7936500,stock
+AES,AES Corporation,US,Utilities,143000,stock
+AFL,Aflac,US,Financials,715000,stock
+A,Agilent Technologies,US,Health Care,429000,stock
+APD,Air Products,US,Materials,715000,stock
+ABNB,Airbnb,US,Consumer Discretionary,929500,stock
+AKAM,Akamai Technologies,US,Information Technology,214500,stock
+ALB,Albemarle Corporation,US,Materials,143000,stock
+ARE,Alexandria Real Estate Equities,US,Real Estate,71500,stock
+ALGN,Align Technology,US,Health Care,143000,stock
+ALLE,Allegion,US,Industrials,143000,stock
+LNT,Alliant Energy,US,Utilities,214500,stock
+ALL,Allstate,US,Financials,715000,stock
+GOOGL,Alphabet Inc. (Class A),US,Communication Services,23881000,stock
+GOOG,Alphabet Inc. (Class C),US,Communication Services,22522500,stock
+MO,Altria,US,Consumer Staples,1215500,stock
+AMZN,Amazon,US,Consumer Discretionary,31174000,stock
+AMCR,Amcor,US,Materials,214500,stock
+AEE,Ameren,US,Utilities,286000,stock
+AEP,American Electric Power,US,Utilities,715000,stock
+AXP,American Express,US,Financials,2431000,stock
+AIG,American International Group,US,Financials,429000,stock
+AMT,American Tower,US,Real Estate,858000,stock
+AWK,American Water Works,US,Utilities,286000,stock
+AMP,Ameriprise Financial,US,Financials,500500,stock
+AME,Ametek,US,Industrials,572000,stock
+AMGN,Amgen,US,Health Care,2216500,stock
+APH,Amphenol,US,Information Technology,2073500,stock
+ADI,Analog Devices,US,Information Technology,1859000,stock
+AON,Aon plc,US,Financials,786500,stock
+APA,APA Corporation,US,Energy,143000,stock
+APO,Apollo Global Management,US,Financials,786500,stock
+AAPL,Apple Inc.,US,Information Technology,47690500,stock
+AMAT,Applied Materials,US,Information Technology,4147000,stock
+APP,AppLovin,US,Information Technology,1430000,stock
+APTV,Aptiv,US,Consumer Discretionary,143000,stock
+ACGL,Arch Capital Group,US,Financials,357500,stock
+ADM,Archer Daniels Midland,US,Consumer Staples,429000,stock
+ARES,Ares Management,US,Financials,286000,stock
+ANET,Arista Networks,US,Information Technology,2288000,stock
+AJG,Arthur J. Gallagher & Co.,US,Financials,643500,stock
+AIZ,Assurant,US,Financials,143000,stock
+T,AT&T,US,Communication Services,1644500,stock
+ATO,Atmos Energy,US,Utilities,286000,stock
+ADSK,Autodesk,US,Information Technology,500500,stock
+ADP,Automatic Data Processing,US,Industrials,1144000,stock
+AZO,AutoZone,US,Consumer Discretionary,500500,stock
+AVB,AvalonBay Communities,US,Real Estate,286000,stock
+AVY,Avery Dennison,US,Materials,143000,stock
+AXON,Axon Enterprise,US,Industrials,429000,stock
+BKR,Baker Hughes,US,Energy,643500,stock
+BALL,Ball Corporation,US,Materials,214500,stock
+BAC,Bank of America,US,Financials,4576000,stock
+BAX,Baxter International,US,Health Care,143000,stock
+BDX,Becton Dickinson,US,Health Care,500500,stock
+BRK-B,Berkshire Hathaway,US,Financials,11583000,stock
+BBY,Best Buy,US,Consumer Discretionary,214500,stock
+TECH,Bio-Techne,US,Health Care,143000,stock
+BIIB,Biogen,US,Health Care,286000,stock
+BLK,BlackRock,US,Financials,1787500,stock
+BX,Blackstone Inc.,US,Financials,1072500,stock
+XYZ,"Block, Inc.",US,Financials,500500,stock
+BNY,BNY Mellon,US,Financials,1144000,stock
+BA,Boeing,US,Industrials,1787500,stock
+BKNG,Booking Holdings,US,Consumer Discretionary,1573000,stock
+BSX,Boston Scientific,US,Health Care,715000,stock
+BMY,Bristol Myers Squibb,US,Health Care,1430000,stock
+AVGO,Broadcom,US,Information Technology,19162000,stock
+BR,Broadridge Financial Solutions,US,Industrials,214500,stock
+BRO,Brown & Brown,US,Financials,214500,stock
+BF-B,Brown–Forman,US,Consumer Staples,143000,stock
+BLDR,Builders FirstSource,US,Industrials,71500,stock
+BG,Bunge Global,US,Consumer Staples,214500,stock
+BXP,"BXP, Inc.",US,Real Estate,143000,stock
+CHRW,C.H. Robinson,US,Industrials,214500,stock
+CDNS,Cadence Design Systems,US,Information Technology,1001000,stock
+CPT,Camden Property Trust,US,Real Estate,143000,stock
+COF,Capital One,US,Financials,1358500,stock
+CAH,Cardinal Health,US,Health Care,572000,stock
+CCL,Carnival Corporation,US,Consumer Discretionary,429000,stock
+CARR,Carrier Global,US,Industrials,572000,stock
+CVNA,Carvana,US,Consumer Discretionary,715000,stock
+CASY,Casey's,US,Consumer Staples,357500,stock
+CAT,Caterpillar Inc.,US,Industrials,3861000,stock
+CBOE,Cboe Global Markets,US,Financials,357500,stock
+CBRE,CBRE Group,US,Real Estate,429000,stock
+CDW,CDW Corporation,US,Information Technology,214500,stock
+COR,Cencora,US,Health Care,643500,stock
+CNC,Centene Corporation,US,Health Care,357500,stock
+CNP,CenterPoint Energy,US,Utilities,286000,stock
+CF,CF Industries,US,Materials,214500,stock
+CRL,Charles River Laboratories,US,Health Care,143000,stock
+SCHW,Charles Schwab Corporation,US,Financials,1930500,stock
+CHTR,Charter Communications,US,Communication Services,214500,stock
+CVX,Chevron Corporation,US,Energy,4075500,stock
+CMG,Chipotle Mexican Grill,US,Consumer Discretionary,500500,stock
+CB,Chubb Limited,US,Financials,1430000,stock
+CHD,Church & Dwight,US,Consumer Staples,214500,stock
+CIEN,Ciena,US,Information Technology,572000,stock
+CI,Cigna,US,Health Care,786500,stock
+CINF,Cincinnati Financial,US,Financials,286000,stock
+CTAS,Cintas,US,Industrials,858000,stock
+CSCO,Cisco,US,Information Technology,4790500,stock
+C,Citigroup,US,Financials,2288000,stock
+CFG,Citizens Financial Group,US,Financials,286000,stock
+CLX,Clorox,US,Consumer Staples,143000,stock
+CME,CME Group,US,Financials,1001000,stock
+CMS,CMS Energy,US,Utilities,214500,stock
+KO,Coca-Cola Company (The),US,Consumer Staples,3932500,stock
+CTSH,Cognizant,US,Information Technology,286000,stock
+COHR,Coherent Corp.,US,Information Technology,500500,stock
+COIN,Coinbase,US,Financials,429000,stock
+CL,Colgate-Palmolive,US,Consumer Staples,786500,stock
+CMCSA,Comcast,US,Communication Services,929500,stock
+FIX,Comfort Systems USA,US,Industrials,643500,stock
+COP,ConocoPhillips,US,Energy,1501500,stock
+ED,Consolidated Edison,US,Utilities,429000,stock
+STZ,Constellation Brands,US,Consumer Staples,214500,stock
+CEG,Constellation Energy,US,Utilities,1001000,stock
+COO,Cooper Companies (The),US,Health Care,143000,stock
+CPRT,Copart,US,Industrials,286000,stock
+GLW,Corning Inc.,US,Information Technology,1215500,stock
+CPAY,Corpay,US,Financials,286000,stock
+CTVA,Corteva,US,Materials,572000,stock
+CSGP,CoStar Group,US,Real Estate,143000,stock
+COST,Costco,US,Consumer Staples,4433000,stock
+CRH,CRH plc,US,Materials,643500,stock
+CRWD,CrowdStrike,US,Information Technology,2073500,stock
+CCI,Crown Castle,US,Real Estate,357500,stock
+CSX,CSX Corporation,US,Industrials,1001000,stock
+CMI,Cummins,US,Industrials,929500,stock
+CVS,CVS Health,US,Health Care,1430000,stock
+DHR,Danaher Corporation,US,Health Care,1430000,stock
+DRI,Darden Restaurants,US,Consumer Discretionary,214500,stock
+DDOG,Datadog,US,Information Technology,1001000,stock
+DVA,DaVita,US,Health Care,143000,stock
+DECK,Deckers Brands,US,Consumer Discretionary,143000,stock
+DE,Deere & Company,US,Industrials,1716000,stock
+DELL,Dell Technologies,US,Information Technology,2717000,stock
+DAL,Delta Air Lines,US,Industrials,643500,stock
+DVN,Devon Energy,US,Energy,500500,stock
+DXCM,Dexcom,US,Health Care,357500,stock
+FANG,Diamondback Energy,US,Energy,572000,stock
+DLR,Digital Realty,US,Real Estate,715000,stock
+DG,Dollar General,US,Consumer Staples,286000,stock
+DLTR,Dollar Tree,US,Consumer Staples,286000,stock
+D,Dominion Energy,US,Utilities,643500,stock
+DPZ,Domino's,US,Consumer Discretionary,143000,stock
+DASH,DoorDash,US,Consumer Discretionary,929500,stock
+DOV,Dover Corporation,US,Industrials,286000,stock
+DOW,Dow Inc.,US,Materials,214500,stock
+DHI,D. R. Horton,US,Consumer Discretionary,429000,stock
+DTE,DTE Energy,US,Utilities,286000,stock
+DUK,Duke Energy,US,Utilities,1001000,stock
+DD,DuPont,US,Materials,214500,stock
+ETN,Eaton Corporation,US,Industrials,1716000,stock
+EBAY,eBay Inc.,US,Consumer Discretionary,500500,stock
+ECHO,EchoStar,US,Communication Services,286000,stock
+ECL,Ecolab,US,Materials,786500,stock
+EIX,Edison International,US,Utilities,286000,stock
+EW,Edwards Lifesciences,US,Health Care,500500,stock
+EA,Electronic Arts,US,Communication Services,572000,stock
+ELV,Elevance Health,US,Health Care,858000,stock
+EME,Emcor,US,Industrials,357500,stock
+EMR,Emerson Electric,US,Industrials,858000,stock
+ETR,Entergy,US,Utilities,500500,stock
+EOG,EOG Resources,US,Energy,786500,stock
+EQT,EQT Corporation,US,Energy,357500,stock
+EFX,Equifax,US,Industrials,214500,stock
+EQIX,Equinix,US,Real Estate,1072500,stock
+EQR,Equity Residential,US,Real Estate,286000,stock
+ERIE,Erie Indemnity,US,Financials,143000,stock
+ESS,Essex Property Trust,US,Real Estate,214500,stock
+EL,Estée Lauder Companies (The),US,Consumer Staples,286000,stock
+EG,Everest Group,US,Financials,143000,stock
+EVRG,Evergy,US,Utilities,214500,stock
+ES,Eversource Energy,US,Utilities,286000,stock
+EXC,Exelon,US,Utilities,500500,stock
+EXE,Expand Energy,US,Energy,214500,stock
+EXPE,Expedia Group,US,Consumer Discretionary,357500,stock
+EXPD,Expeditors International,US,Industrials,214500,stock
+EXR,Extra Space Storage,US,Real Estate,357500,stock
+XOM,ExxonMobil,US,Energy,6649500,stock
+FFIV,"F5, Inc.",US,Information Technology,214500,stock
+FDS,FactSet,US,Financials,71500,stock
+FICO,Fair Isaac,US,Information Technology,286000,stock
+FAST,Fastenal,US,Industrials,572000,stock
+FRT,Federal Realty Investment Trust,US,Real Estate,143000,stock
+FDX,FedEx,US,Industrials,786500,stock
+FDXF,FedEx Freight,US,Industrials,214500,stock
+FIS,Fidelity National Information Services,US,Financials,214500,stock
+FITB,Fifth Third Bancorp,US,Financials,572000,stock
+FSLR,First Solar,US,Information Technology,214500,stock
+FE,FirstEnergy,US,Utilities,286000,stock
+FISV,Fiserv,US,Financials,286000,stock
+FLEX,Flex Ltd.,US,Information Technology,429000,stock
+F,Ford Motor Company,US,Consumer Discretionary,643500,stock
+FTNT,Fortinet,US,Information Technology,1287000,stock
+FTV,Fortive,US,Industrials,214500,stock
+FOXA,Fox Corporation (Class A),US,Communication Services,143000,stock
+FOX,Fox Corporation (Class B),US,Communication Services,143000,stock
+BEN,Franklin Resources,US,Financials,214500,stock
+FCX,Freeport-McMoRan,US,Materials,929500,stock
+GRMN,Garmin,US,Consumer Discretionary,572000,stock
+IT,Gartner,US,Information Technology,143000,stock
+GE,GE Aerospace,US,Industrials,3932500,stock
+GEHC,GE HealthCare,US,Health Care,357500,stock
+GEV,GE Vernova,US,Industrials,2717000,stock
+GEN,Gen Digital,US,Information Technology,143000,stock
+GNRC,Generac,US,Industrials,143000,stock
+GD,General Dynamics,US,Industrials,1072500,stock
+GIS,General Mills,US,Consumer Staples,214500,stock
+GM,General Motors,US,Consumer Discretionary,858000,stock
+GPC,Genuine Parts Company,US,Consumer Discretionary,214500,stock
+GILD,Gilead Sciences,US,Health Care,1716000,stock
+GPN,Global Payments,US,Financials,214500,stock
+GL,Globe Life,US,Financials,143000,stock
+GDDY,GoDaddy,US,Information Technology,143000,stock
+GS,Goldman Sachs,US,Financials,3146000,stock
+HAL,Halliburton,US,Energy,286000,stock
+HIG,Hartford (The),US,Financials,429000,stock
+HAS,Hasbro,US,Consumer Discretionary,143000,stock
+HCA,HCA Healthcare,US,Health Care,929500,stock
+DOC,Healthpeak Properties,US,Real Estate,143000,stock
+HSIC,Henry Schein,US,Health Care,71500,stock
+HSY,Hershey Company (The),US,Consumer Staples,357500,stock
+HPE,Hewlett Packard Enterprise,US,Information Technology,643500,stock
+HLT,Hilton Worldwide,US,Consumer Discretionary,786500,stock
+HD,Home Depot (The),US,Consumer Discretionary,3503500,stock
+HONA,Honeywell Aerospace,US,Industrials,715000,stock
+HON,Honeywell Technologies,US,Industrials,786500,stock
+HRL,Hormel Foods,US,Consumer Staples,143000,stock
+HST,Host Hotels & Resorts,US,Real Estate,214500,stock
+HWM,Howmet Aerospace,US,Industrials,1215500,stock
+HPQ,HP Inc.,US,Information Technology,286000,stock
+HUBB,Hubbell Incorporated,US,Industrials,286000,stock
+HUM,Humana,US,Health Care,429000,stock
+HBAN,Huntington Bancshares,US,Financials,357500,stock
+HII,Huntington Ingalls Industries,US,Industrials,143000,stock
+IBM,IBM,US,Information Technology,2216500,stock
+IEX,IDEX Corporation,US,Industrials,143000,stock
+IDXX,Idexx Laboratories,US,Health Care,429000,stock
+ITW,Illinois Tool Works,US,Industrials,858000,stock
+INCY,Incyte,US,Health Care,286000,stock
+IR,Ingersoll Rand,US,Industrials,357500,stock
+PODD,Insulet Corporation,US,Health Care,143000,stock
+INTC,Intel,US,Information Technology,4647500,stock
+IBKR,Interactive Brokers,US,Financials,429000,stock
+ICE,Intercontinental Exchange,US,Financials,929500,stock
+IFF,International Flavors & Fragrances,US,Materials,214500,stock
+IP,International Paper,US,Materials,214500,stock
+INTU,Intuit,US,Information Technology,929500,stock
+ISRG,Intuitive Surgical,US,Health Care,1358500,stock
+IVZ,Invesco,US,Financials,143000,stock
+INVH,Invitation Homes,US,Real Estate,214500,stock
+IQV,IQVIA,US,Health Care,429000,stock
+IRM,Iron Mountain,US,Real Estate,357500,stock
+JBHT,J.B. Hunt,US,Industrials,286000,stock
+JBL,Jabil,US,Information Technology,357500,stock
+JKHY,Jack Henry & Associates,US,Financials,143000,stock
+J,Jacobs Solutions,US,Industrials,143000,stock
+JNJ,Johnson & Johnson,US,Health Care,6506500,stock
+JCI,Johnson Controls,US,Industrials,929500,stock
+JPM,JPMorgan Chase,US,Financials,9867000,stock
+KVUE,Kenvue,US,Consumer Staples,357500,stock
+KDP,Keurig Dr Pepper,US,Consumer Staples,429000,stock
+KEY,KeyCorp,US,Financials,286000,stock
+KEYS,Keysight Technologies,US,Information Technology,572000,stock
+KMB,Kimberly-Clark,US,Consumer Staples,357500,stock
+KIM,Kimco Realty,US,Real Estate,214500,stock
+KMI,Kinder Morgan,US,Energy,715000,stock
+KKR,KKR & Co.,US,Financials,929500,stock
+KLAC,KLA Corporation,US,Information Technology,2431000,stock
+KHC,Kraft Heinz,US,Consumer Staples,357500,stock
+KR,Kroger,US,Consumer Staples,357500,stock
+LHX,L3Harris,US,Industrials,572000,stock
+LH,Labcorp,US,Health Care,286000,stock
+LRCX,Lam Research,US,Information Technology,3718000,stock
+LVS,Las Vegas Sands,US,Consumer Discretionary,357500,stock
+LDOS,Leidos,US,Industrials,143000,stock
+LEN,Lennar,US,Consumer Discretionary,214500,stock
+LII,Lennox International,US,Industrials,143000,stock
+LLY,Lilly (Eli),US,Health Care,10796500,stock
+LIN,Linde plc,US,Materials,2359500,stock
+LYV,Live Nation Entertainment,US,Communication Services,429000,stock
+LMT,Lockheed Martin,US,Industrials,1430000,stock
+L,Loews Corporation,US,Financials,214500,stock
+LOW,Lowe's,US,Consumer Discretionary,1215500,stock
+LULU,Lululemon Athletica,US,Consumer Discretionary,143000,stock
+LITE,Lumentum,US,Information Technology,572000,stock
+LYB,LyondellBasell,US,Materials,214500,stock
+MTB,M&T Bank,US,Financials,357500,stock
+MPC,Marathon Petroleum,US,Energy,929500,stock
+MAR,Marriott International,US,Consumer Discretionary,1001000,stock
+MRSH,Marsh McLennan,US,Financials,929500,stock
+MLM,Martin Marietta Materials,US,Materials,357500,stock
+MRVL,Marvell Technology,US,Information Technology,1716000,stock
+MAS,Masco,US,Industrials,143000,stock
+MA,Mastercard,US,Financials,5291000,stock
+MKC,McCormick & Company,US,Consumer Staples,143000,stock
+MCD,McDonald's,US,Consumer Discretionary,2073500,stock
+MCK,McKesson Corporation,US,Health Care,1072500,stock
+MDT,Medtronic,US,Health Care,1144000,stock
+MRK,Merck & Co.,US,Health Care,3360500,stock
+META,Meta Platforms,US,Communication Services,15086500,stock
+MET,MetLife,US,Financials,643500,stock
+MTD,Mettler Toledo,US,Health Care,286000,stock
+MGM,MGM Resorts,US,Consumer Discretionary,143000,stock
+MCHP,Microchip Technology,US,Information Technology,429000,stock
+MU,Micron Technology,US,Information Technology,9366500,stock
+MSFT,Microsoft,US,Information Technology,36822500,stock
+MAA,Mid-America Apartment Communities,US,Real Estate,143000,stock
+MRNA,Moderna,US,Health Care,214500,stock
+TAP,Molson Coors Beverage Company,US,Consumer Staples,71500,stock
+MDLZ,Mondelez International,US,Consumer Staples,858000,stock
+MPWR,Monolithic Power Systems,US,Information Technology,715000,stock
+MNST,Monster Beverage,US,Consumer Staples,1001000,stock
+MCO,Moody's Corporation,US,Financials,858000,stock
+MS,Morgan Stanley,US,Financials,3503500,stock
+MOS,Mosaic Company (The),US,Materials,71500,stock
+MSI,Motorola Solutions,US,Information Technology,786500,stock
+MSCI,MSCI Inc.,US,Financials,429000,stock
+NDAQ,"Nasdaq, Inc.",US,Financials,572000,stock
+NTAP,NetApp,US,Information Technology,357500,stock
+NFLX,Netflix,US,Communication Services,3146000,stock
+NEM,Newmont,US,Materials,1072500,stock
+NWSA,News Corp (Class A),US,Communication Services,71500,stock
+NWS,News Corp (Class B),US,Communication Services,71500,stock
+NEE,NextEra Energy,US,Utilities,1930500,stock
+NKE,"Nike, Inc.",US,Consumer Discretionary,643500,stock
+NI,NiSource,US,Utilities,214500,stock
+NDSN,Nordson Corporation,US,Industrials,143000,stock
+NSC,Norfolk Southern,US,Industrials,786500,stock
+NTRS,Northern Trust,US,Financials,357500,stock
+NOC,Northrop Grumman,US,Industrials,786500,stock
+NCLH,Norwegian Cruise Line Holdings,US,Consumer Discretionary,71500,stock
+NRG,NRG Energy,US,Utilities,286000,stock
+NUE,Nucor,US,Materials,643500,stock
+NVDA,Nvidia,US,Information Technology,50264500,stock
+NVR,"NVR, Inc.",US,Consumer Discretionary,143000,stock
+NXPI,NXP Semiconductors,US,Information Technology,572000,stock
+ORLY,O’Reilly Automotive,US,Consumer Discretionary,786500,stock
+OXY,Occidental Petroleum,US,Energy,572000,stock
+ODFL,Old Dominion,US,Industrials,429000,stock
+OMC,Omnicom Group,US,Communication Services,214500,stock
+ON,ON Semiconductor,US,Information Technology,357500,stock
+OKE,Oneok,US,Energy,572000,stock
+ORCL,Oracle Corporation,US,Information Technology,4004000,stock
+OTIS,Otis Worldwide,US,Industrials,286000,stock
+PCAR,Paccar,US,Industrials,715000,stock
+PKG,Packaging Corporation of America,US,Materials,214500,stock
+PLTR,Palantir Technologies,US,Information Technology,3146000,stock
+PANW,Palo Alto Networks,US,Information Technology,2931500,stock
+PSKY,Paramount Skydance Corporation,US,Communication Services,71500,stock
+PH,Parker Hannifin,US,Industrials,1287000,stock
+PAYX,Paychex,US,Industrials,429000,stock
+PYPL,PayPal,US,Financials,500500,stock
+PNR,Pentair,US,Industrials,143000,stock
+PEP,PepsiCo,US,Consumer Staples,2002000,stock
+PFE,Pfizer,US,Health Care,1501500,stock
+PCG,PG&E Corporation,US,Utilities,429000,stock
+PM,Philip Morris International,US,Consumer Staples,3146000,stock
+PSX,Phillips 66,US,Energy,858000,stock
+PNW,Pinnacle West Capital,US,Utilities,143000,stock
+PNC,PNC Financial Services,US,Financials,1072500,stock
+PPG,PPG Industries,US,Materials,286000,stock
+PPL,PPL Corporation,US,Utilities,286000,stock
+PFG,Principal Financial Group,US,Financials,286000,stock
+PG,Procter & Gamble,US,Consumer Staples,3575000,stock
+PGR,Progressive Corporation,US,Financials,1287000,stock
+PLD,Prologis,US,Real Estate,1430000,stock
+PRU,Prudential Financial,US,Financials,429000,stock
+PEG,Public Service Enterprise Group,US,Utilities,429000,stock
+PTC,PTC Inc.,US,Information Technology,143000,stock
+PSA,Public Storage,US,Real Estate,643500,stock
+PHM,PulteGroup,US,Consumer Discretionary,286000,stock
+PWR,Quanta Services,US,Industrials,1072500,stock
+QCOM,Qualcomm,US,Information Technology,1573000,stock
+DGX,Quest Diagnostics,US,Health Care,286000,stock
+Q,Qnity Electronics,US,Information Technology,286000,stock
+RL,Ralph Lauren Corporation,US,Consumer Discretionary,214500,stock
+RJF,Raymond James Financial,US,Financials,357500,stock
+RTX,RTX Corporation,US,Industrials,3074500,stock
+O,Realty Income,US,Real Estate,643500,stock
+REG,Regency Centers,US,Real Estate,143000,stock
+REGN,Regeneron Pharmaceuticals,US,Health Care,858000,stock
+RF,Regions Financial Corporation,US,Financials,286000,stock
+RSG,Republic Services,US,Industrials,715000,stock
+RMD,ResMed,US,Health Care,357500,stock
+RVTY,Revvity,US,Health Care,143000,stock
+HOOD,Robinhood Markets,US,Financials,786500,stock
+ROK,Rockwell Automation,US,Industrials,572000,stock
+ROL,"Rollins, Inc.",US,Industrials,214500,stock
+ROP,Roper Technologies,US,Information Technology,429000,stock
+ROST,Ross Stores,US,Consumer Discretionary,858000,stock
+RCL,Royal Caribbean Group,US,Consumer Discretionary,929500,stock
+SPGI,S&P Global,US,Financials,1287000,stock
+CRM,Salesforce,US,Information Technology,1644500,stock
+SNDK,Sandisk,US,Information Technology,1787500,stock
+SBAC,SBA Communications,US,Real Estate,214500,stock
+SLB,Schlumberger,US,Energy,786500,stock
+STX,Seagate Technology,US,Information Technology,1930500,stock
+SRE,Sempra,US,Utilities,643500,stock
+NOW,ServiceNow,US,Information Technology,1215500,stock
+SHW,Sherwin-Williams,US,Materials,858000,stock
+SPG,Simon Property Group,US,Real Estate,786500,stock
+SWKS,Skyworks Solutions,US,Information Technology,71500,stock
+SJM,J.M. Smucker Company (The),US,Consumer Staples,143000,stock
+SW,Smurfit Westrock,US,Materials,286000,stock
+SNA,Snap-on,US,Industrials,214500,stock
+SOLV,Solventum,US,Health Care,143000,stock
+SO,Southern Company,US,Utilities,1144000,stock
+LUV,Southwest Airlines,US,Industrials,214500,stock
+SWK,Stanley Black & Decker,US,Industrials,143000,stock
+SBUX,Starbucks,US,Consumer Discretionary,1287000,stock
+STT,State Street Corporation,US,Financials,500500,stock
+STLD,Steel Dynamics,US,Materials,357500,stock
+STE,Steris,US,Health Care,214500,stock
+SYK,Stryker Corporation,US,Health Care,1287000,stock
+SMCI,Supermicro,US,Information Technology,214500,stock
+SYF,Synchrony Financial,US,Financials,286000,stock
+SNPS,Synopsys,US,Information Technology,786500,stock
+SYY,Sysco,US,Consumer Staples,429000,stock
+TMUS,T-Mobile US,US,Communication Services,1930500,stock
+TROW,T. Rowe Price,US,Financials,286000,stock
+TTWO,Take-Two Interactive,US,Communication Services,500500,stock
+TPR,"Tapestry, Inc.",US,Consumer Discretionary,357500,stock
+TRGP,Targa Resources,US,Energy,572000,stock
+TGT,Target Corporation,US,Consumer Staples,715000,stock
+TEL,TE Connectivity,US,Information Technology,643500,stock
+TDY,Teledyne Technologies,US,Information Technology,286000,stock
+TER,Teradyne,US,Information Technology,572000,stock
+TSLA,"Tesla, Inc.",US,Consumer Discretionary,12870000,stock
+TXN,Texas Instruments,US,Information Technology,2574000,stock
+TPL,Texas Pacific Land Corporation,US,Energy,286000,stock
+TXT,Textron,US,Industrials,143000,stock
+TMO,Thermo Fisher Scientific,US,Health Care,2288000,stock
+TJX,TJX Companies,US,Consumer Discretionary,1787500,stock
+TKO,TKO Group Holdings,US,Communication Services,143000,stock
+TTD,Trade Desk (The),US,Communication Services,71500,stock
+TSCO,Tractor Supply,US,Consumer Discretionary,143000,stock
+TT,Trane Technologies,US,Industrials,1072500,stock
+TDG,TransDigm Group,US,Industrials,786500,stock
+TRV,Travelers Companies (The),US,Financials,786500,stock
+TRMB,Trimble Inc.,US,Information Technology,143000,stock
+TFC,Truist Financial,US,Financials,643500,stock
+TYL,Tyler Technologies,US,Information Technology,143000,stock
+TSN,Tyson Foods,US,Consumer Staples,214500,stock
+USB,U.S. Bancorp,US,Financials,1001000,stock
+UBER,Uber,US,Industrials,1501500,stock
+UDR,"UDR, Inc.",US,Real Estate,143000,stock
+ULTA,Ulta Beauty,US,Consumer Discretionary,214500,stock
+UNP,Union Pacific Corporation,US,Industrials,1859000,stock
+UAL,United Airlines Holdings,US,Industrials,429000,stock
+UPS,United Parcel Service,US,Industrials,929500,stock
+URI,United Rentals,US,Industrials,715000,stock
+UNH,UnitedHealth Group,US,Health Care,3932500,stock
+UHS,Universal Health Services,US,Health Care,71500,stock
+VLO,Valero Energy,US,Energy,929500,stock
+VEEV,Veeva Systems,US,Health Care,357500,stock
+VTR,Ventas,US,Real Estate,500500,stock
+VLTO,Veralto,US,Industrials,214500,stock
+VRSN,Verisign,US,Information Technology,286000,stock
+VRSK,Verisk Analytics,US,Industrials,286000,stock
+VZ,Verizon,US,Communication Services,2073500,stock
+VRTX,Vertex Pharmaceuticals,US,Health Care,1287000,stock
+VRT,Vertiv,US,Industrials,929500,stock
+VTRS,Viatris,US,Health Care,214500,stock
+VICI,Vici Properties,US,Real Estate,286000,stock
+V,Visa Inc.,US,Financials,7221500,stock
+VST,Vistra Corp.,US,Utilities,500500,stock
+VMC,Vulcan Materials Company,US,Materials,357500,stock
+WRB,W. R. Berkley Corporation,US,Financials,286000,stock
+GWW,W. W. Grainger,US,Industrials,643500,stock
+WAB,Wabtec,US,Industrials,500500,stock
+WMT,Walmart,US,Consumer Staples,9366500,stock
+DIS,Walt Disney Company (The),US,Communication Services,1787500,stock
+WBD,Warner Bros. Discovery,US,Communication Services,715000,stock
+WM,Waste Management,US,Industrials,929500,stock
+WAT,Waters Corporation,US,Health Care,357500,stock
+WEC,WEC Energy Group,US,Utilities,357500,stock
+WFC,Wells Fargo,US,Financials,2717000,stock
+WELL,Welltower,US,Real Estate,1787500,stock
+WST,West Pharmaceutical Services,US,Health Care,286000,stock
+WDC,Western Digital,US,Information Technology,1930500,stock
+WY,Weyerhaeuser,US,Real Estate,214500,stock
+WSM,"Williams-Sonoma, Inc.",US,Consumer Discretionary,286000,stock
+WMB,Williams Companies,US,Energy,929500,stock
+WTW,Willis Towers Watson,US,Financials,357500,stock
+WDAY,"Workday, Inc.",US,Information Technology,429000,stock
+WYNN,Wynn Resorts,US,Consumer Discretionary,143000,stock
+XEL,Xcel Energy,US,Utilities,500500,stock
+XYL,Xylem Inc.,US,Industrials,286000,stock
+YUM,Yum! Brands,US,Consumer Discretionary,429000,stock
+ZBRA,Zebra Technologies,US,Information Technology,143000,stock
+ZBH,Zimmer Biomet,US,Health Care,214500,stock
+ZTS,Zoetis,US,Health Care,357500,stock
+SPY,SPDR S&P 500 ETF,NYSE,전략,5000000,etf
+QQQ,Invesco QQQ Trust,NASDAQ,전략,3000000,etf
+DIA,SPDR Dow Jones ETF,NYSE,전략,400000,etf
+IWM,iShares Russell 2000,NYSE,전략,700000,etf
+VTI,Vanguard Total Market,NYSE,전략,4500000,etf
+GLD,SPDR Gold Shares,NYSE,원자재,800000,etf
+SLV,iShares Silver Trust,NYSE,원자재,150000,etf
+TLT,iShares 20+ Treasury,NASDAQ,채권,500000,etf
+XLK,Technology Select SPDR,NYSE,섹터,700000,etf
+XLF,Financial Select SPDR,NYSE,섹터,500000,etf
+XLE,Energy Select SPDR,NYSE,섹터,400000,etf

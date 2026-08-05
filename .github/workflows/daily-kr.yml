@@ -1,0 +1,56 @@
+name: daily-kr
+# 한국장 마감(15:30 KST) 후 수집 → R2 업로드 (명세 5-1)
+on:
+  schedule:
+    - cron: "30 7 * * 1-5" # 07:30 UTC = 16:30 KST
+  workflow_dispatch:
+
+concurrency:
+  group: daily-kr
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r pipeline/requirements.txt
+
+      # R2 에서 기존 parquet 를 받아와 휴장일 스킵 판정에 활용 (선택)
+      - name: Fetch KR OHLCV + universe
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+        run: python -m pipeline.daily.fetch_kr
+
+      - name: Sync US universe from R2 (병합용)
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m pipeline.daily.sync_down --keys universe_us.json
+
+      - name: KR 업종 보강 + 섹터 집계 → universe.json 병합
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+        run: |
+          python -m pipeline.daily.build_sectors --enrich-kr
+          python -m pipeline.daily.build_universe
+
+      - name: Upload to R2
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m pipeline.daily.upload_r2
