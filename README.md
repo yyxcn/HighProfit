@@ -1,5 +1,7 @@
 # HighProfit
 
+![HighProfit 랜딩 화면](docs/assets/landing.png)
+
 > **서버 없는 개인용 투자 분석 대시보드.**
 > 시세는 배치로 수집해 정적 파일(parquet·json)로 배포하고, 모든 분석(차트·히트맵·계절성·백테스트·13F)은 **브라우저에서 계산**한다.
 > DB·API 서버·로그인 없음. 운영비 0원. 개인 설정은 IndexedDB에 로컬 저장.

@@ -145,7 +145,7 @@ function Hero() {
 
       <div className="relative z-10 max-w-5xl mx-auto w-full px-5 md:px-10 flex flex-col items-center text-center">
         <span className="fade-up num text-micro md:text-small uppercase tracking-[0.38em] text-white/55 mb-5 md:mb-7">
-          Serverless Investment Terminal
+          Personal Investment Dashboard
         </span>
 
         <h1 className="fade-up font-display font-semibold leading-[0.86] tracking-[-0.05em] text-[clamp(3rem,12vw,8.75rem)] drop-shadow-[0_6px_50px_rgba(0,0,0,0.5)] px-[0.12em]">
