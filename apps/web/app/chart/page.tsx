@@ -2,14 +2,12 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, CandlestickChart, Search } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import type { Bar, Market } from "@highprofit/core";
 import { getBars } from "@/lib/data";
 import { useUniverse } from "@/lib/universe";
 import { kvGet, kvSet, DEFAULT_SMA, type SmaLine } from "@/lib/db";
-import { useSearch } from "@/components/common/TickerSearch";
 import { MarketBadge } from "@/components/common/SecurityPicker";
-import { EmptyState } from "@/components/common/EmptyState";
 import { PriceChart, type Preset } from "@/components/chart/PriceChart";
 import { SmaPanel } from "@/components/chart/SmaPanel";
 import { TradingViewChart } from "@/components/chart/TradingViewChart";
@@ -31,11 +29,14 @@ export default function ChartPage() {
   );
 }
 
+// 초기 화면 기본 종목 (URL 에 ?m=&t= 없을 때)
+const DEFAULT_MARKET: Market = "US";
+const DEFAULT_TICKER = "SPY";
+
 function ChartView() {
   const params = useSearchParams();
-  const market = (params.get("m") as Market) || null;
-  const ticker = params.get("t");
-  const openSearch = useSearch((s) => s.open);
+  const market = (params.get("m") as Market) || DEFAULT_MARKET;
+  const ticker = params.get("t") || DEFAULT_TICKER;
   const { items } = useUniverse();
   const meta = items.find((it) => it.m === market && it.t === ticker);
 
@@ -73,25 +74,6 @@ function ChartView() {
     kvSet("chart.sma", next);
   };
   const changeMode = (m: Mode) => setMode(m);
-
-  if (!market || !ticker) {
-    return (
-      <div className="p-4 md:p-6">
-        <EmptyState
-          icon={CandlestickChart}
-          title="종목을 검색해 시작하세요."
-          action={
-            <button
-              onClick={openSearch}
-              className="flex items-center gap-2 h-9 px-3 rounded-md border border-line bg-raised text-fg text-small hover:border-accent"
-            >
-              <Search size={15} /> 종목 검색 <kbd className="num text-micro text-fg-mute">⌘K</kbd>
-            </button>
-          }
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="h-full flex flex-col">

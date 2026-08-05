@@ -19,22 +19,22 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         {/* 상단바 — 글래스 */}
         <header className="h-14 shrink-0 flex items-center justify-between px-5 border-b border-line bg-ink/70 backdrop-blur-xl z-20">
-          <div className="flex items-center gap-2.5">
+          <div className="flex-1 flex items-center gap-2.5 min-w-0">
             <span className="h-1.5 w-1.5 rounded-full bg-mint shadow-[0_0_8px_var(--color-mint)]" />
             <h1 className="text-sm font-semibold text-fg tracking-tight">{tabTitle(pathname)}</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => open()}
-              className="group flex items-center gap-2 h-8 pl-2.5 pr-2 rounded-lg border border-line bg-surface/60 text-fg-dim hover:text-fg hover:border-accent/50 text-small transition-all"
-              aria-label="종목 검색"
-            >
-              <Search size={14} />
-              <span className="hidden sm:inline">종목 검색</span>
-              <kbd className="num text-micro text-fg-mute border border-line rounded px-1 py-0.5 group-hover:border-accent/40">
-                ⌘K
-              </kbd>
-            </button>
+          <button
+            onClick={() => open()}
+            className="group flex items-center gap-2 h-8 pl-3 pr-2 sm:w-80 md:w-[25rem] rounded-lg border border-line bg-raised/70 text-fg-dim hover:text-fg hover:border-accent/60 hover:bg-raised text-small transition-all"
+            aria-label="종목 검색"
+          >
+            <Search size={15} className="shrink-0 text-accent" />
+            <span className="hidden sm:inline">종목 검색</span>
+            <kbd className="num text-micro text-fg-mute border border-line rounded px-1 py-0.5 group-hover:border-accent/40 sm:ml-auto">
+              ⌘K
+            </kbd>
+          </button>
+          <div className="flex-1 flex items-center justify-end gap-2 min-w-0">
             <ThemeToggle />
           </div>
         </header>
