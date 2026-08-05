@@ -12,6 +12,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const open = useSearch((s) => s.open);
 
+  // 랜딩(/)은 몰입형 풀스크린 — 앱 chrome(사이드바/탑바/하단탭) 없이 자체 레이아웃.
+  if (pathname === "/") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex h-dvh overflow-hidden">
       <Sidebar />
