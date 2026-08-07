@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV } from "./nav";
+import { BrandGlyph } from "./BrandMark";
 import { cn } from "@/lib/utils";
 import { getMeta } from "@/lib/data";
 import { stamp } from "@/lib/format";
@@ -16,8 +17,8 @@ export function Sidebar() {
     <aside className="hidden md:flex flex-col border-r border-line bg-surface/40 backdrop-blur-xl md:w-[76px] xl:w-[228px] shrink-0">
       <div className="h-14 flex items-center px-5 border-b border-line">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="grid place-items-center h-7 w-7 rounded-lg bg-accent/15 border border-accent/30 text-accent font-display text-sm leading-none">
-            H
+          <span className="grid place-items-center h-7 w-7 rounded-lg bg-accent/15 border border-accent/30 text-accent">
+            <BrandGlyph />
           </span>
           <span className="font-display text-fg text-[17px] hidden xl:inline tracking-tight">HighProfit</span>
         </Link>

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { HeroCurve } from "@/components/home/HeroCurve";
+import { BrandGlyph } from "@/components/layout/BrandMark";
 import { cn } from "@/lib/utils";
 
 /** 각 캡ability 를 works 리스트로 — forai 스타일 넘버드 행. */
@@ -65,13 +66,13 @@ function TopNav({ scrolled }: { scrolled: boolean }) {
         <Link href="/" className="flex items-center gap-2.5">
           <span
             className={cn(
-              "grid place-items-center h-8 w-8 rounded-lg font-display text-sm leading-none transition-colors",
+              "grid place-items-center h-8 w-8 rounded-lg transition-colors",
               scrolled
                 ? "bg-accent/15 border border-accent/30 text-accent"
                 : "bg-white/10 border border-white/20 text-white"
             )}
           >
-            H
+            <BrandGlyph />
           </span>
           <span className={cn("font-display text-[17px] tracking-tight transition-colors", scrolled ? "text-fg" : "text-white")}>
             HighProfit
@@ -145,11 +146,11 @@ function Hero() {
 
       <div className="relative z-10 max-w-5xl mx-auto w-full px-5 md:px-10 flex flex-col items-center text-center">
         <span className="fade-up num text-micro md:text-small uppercase tracking-[0.38em] text-white/55 mb-5 md:mb-7">
-          Personal Investment Dashboard
+          Personal Investment Assistant
         </span>
 
         <h1 className="fade-up font-display font-semibold leading-[0.86] tracking-[-0.05em] text-[clamp(3rem,12vw,8.75rem)] drop-shadow-[0_6px_50px_rgba(0,0,0,0.5)] px-[0.12em]">
-          <span className="bg-gradient-to-b from-white via-white to-white/50 bg-clip-text text-transparent">High</span>
+          <span className="italic bg-gradient-to-b from-white via-white to-white/50 bg-clip-text text-transparent pr-[0.14em]">High</span>
           <span className="italic bg-gradient-to-b from-accent via-accent to-accent-dim bg-clip-text text-transparent pr-[0.14em]">Profit</span>
         </h1>
 
@@ -303,8 +304,8 @@ function FinalCta() {
 
         <footer className="mt-28 pt-10 border-t border-line flex flex-col md:flex-row justify-between items-center gap-4 text-fg-mute text-small">
           <div className="flex items-center gap-2.5">
-            <span className="grid place-items-center h-7 w-7 rounded-lg bg-accent/15 border border-accent/30 text-accent font-display text-sm leading-none">
-              H
+            <span className="grid place-items-center h-7 w-7 rounded-lg bg-accent/15 border border-accent/30 text-accent">
+              <BrandGlyph />
             </span>
             <span className="font-display text-fg text-base">HighProfit</span>
           </div>

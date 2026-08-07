@@ -183,7 +183,7 @@ export default function SeasonalityPage() {
                 </div>
                 <div className="flex flex-col gap-1.5 text-small text-fg-mute">
                   <Legend swatch="var(--color-fg)" label="평균 경로" />
-                  {actual && <Legend swatch="var(--color-accent)" label="올해 실제" />}
+                  {actual && <Legend swatch="var(--color-accent)" label="올해 경로" />}
                 </div>
               </div>
               <div className="h-[360px]">
