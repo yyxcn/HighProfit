@@ -1,102 +1,56 @@
 """
 US 일간 수집 (명세 5, Phase 4).
-- config/us_universe.csv 에 정의된 종목만 (전종목 금지 — 명세 5-4)
+- 대상은 **universe_us.json 전체** (dev/build_full_universe.py 가 만든 전종목 인덱스)
 - yfinance auto_adjust=True 로 수정주가 OHLCV → 종목당 parquet
-- universe_us.json (섹터=CSV의 GICS/카테고리)
+- 수집 로직은 pipeline/lib/yfetch.py 공유 (KR 과 동일)
 
 사용:
   python -m pipeline.daily.fetch_us
   python -m pipeline.daily.fetch_us --tickers AAPL,MSFT
+  python -m pipeline.daily.fetch_us --new-only      # parquet 없는 종목만(초기적재 이어하기)
+  python -m pipeline.daily.fetch_us --min-rows 5    # 신규상장도 저장(기본 20)
 """
 from __future__ import annotations
 
 import argparse
-import csv
 import sys
-import time
-from pathlib import Path
 
-import pandas as pd
-
-from pipeline.lib import io
-
-CONFIG = Path(__file__).resolve().parents[1] / "config" / "us_universe.csv"
-
-
-def load_config() -> list[dict]:
-    with CONFIG.open(encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def fetch_one(yf, ticker: str) -> pd.DataFrame | None:
-    """yfinance 수정주가. yfinance 티커는 BRK-B → BRK-B 그대로 허용."""
-    try:
-        df = yf.download(
-            ticker, period="max", auto_adjust=True, progress=False, threads=False
-        )
-    except Exception as e:  # noqa: BLE001
-        print(f"  ! {ticker} 실패: {e}", file=sys.stderr)
-        return None
-    if df is None or df.empty:
-        return None
-    # 멀티인덱스 컬럼 방어
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
-    df = df.rename(columns=str.lower).reset_index()
-    df["date"] = pd.to_datetime(df["Date"] if "Date" in df else df["index"]).dt.strftime("%Y-%m-%d")
-    df = df[df["close"] > 0]
-    if df.empty:
-        return None
-    return df[["date", "open", "high", "low", "close", "volume"]]
+from pipeline.lib import io, yfetch
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tickers", default="", help="쉼표구분 (기본: CSV 전체)")
-    ap.add_argument("--sleep", type=float, default=0.3)
+    ap.add_argument("--tickers", default="", help="쉼표구분 (기본: universe_us.json 전체)")
+    ap.add_argument("--new-only", action="store_true", help="parquet 없는 종목만")
+    ap.add_argument("--chunk", type=int, default=60, help="한 요청에 묶을 종목 수 (1=단건)")
+    ap.add_argument("--sleep", type=float, default=0.4, help="청크 간 지연(초)")
+    ap.add_argument("--min-rows", type=int, default=20, help="이보다 짧은 시계열은 저장 안 함")
+    ap.add_argument("--full", action="store_true",
+                    help="증분이 아니라 전체 이력 재수집 (월 1회 정합성 점검용)")
+    ap.add_argument("--window", default="3mo", help="증분으로 받을 최근 구간")
     args = ap.parse_args()
 
-    import yfinance as yf
+    universe = io.read_json("universe_us.json", []) or []
+    if not universe:
+        print(
+            "universe_us.json 이 없습니다 — dev.build_full_universe 를 먼저 실행하세요.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-    rows = load_config()
+    tickers = [u["t"] for u in universe]
     if args.tickers:
         want = set(args.tickers.split(","))
-        rows = [r for r in rows if r["ticker"] in want]
+        tickers = [t for t in tickers if t in want]
+    if args.new_only:
+        tickers = [t for t in tickers if not (io.DATA_DIR / "ohlcv" / "US" / f"{t}.parquet").exists()]
 
-    universe: list[dict] = []
-    ok, skipped = 0, 0
-    for i, r in enumerate(rows, 1):
-        ticker = r["ticker"]
-        df = fetch_one(yf, ticker)
-        if df is None:
-            print(f"  ! {ticker} 데이터 없음", file=sys.stderr)
-            continue
-
-        existing = io.DATA_DIR / "ohlcv" / "US" / f"{ticker}.parquet"
-        if existing.exists():
-            old = pd.read_parquet(existing)
-            if not old.empty and old["date"].iloc[-1] == df["date"].iloc[-1]:
-                skipped += 1
-            else:
-                io.write_ohlcv("US", ticker, df)
-                ok += 1
-        else:
-            io.write_ohlcv("US", ticker, df)
-            ok += 1
-
-        universe.append(
-            {
-                "t": ticker, "n": r["name"], "m": "US", "e": r["exchange"],
-                "s": r["sector"], "c": int(r["cap_eok"]), "type": r["type"],
-            }
-        )
-        if i % 25 == 0:
-            print(f"  {i}/{len(rows)} (신규/갱신 {ok}, 스킵 {skipped})")
-        time.sleep(args.sleep)
-
-    io.write_json("universe_us.json", universe)
-    io.update_meta(lastUpdatedUS=io.now_kst_iso())
-    print(f"완료: US OHLCV {ok} 작성, {skipped} 스킵, universe_us {len(universe)} 항목")
+    print(f"US 대상 {len(tickers)} / 유니버스 {len(universe)} 종목", flush=True)
+    yfetch.collect(
+        "US", tickers, lambda t: t,
+        chunk=args.chunk, sleep=args.sleep, min_rows=args.min_rows,
+        full=args.full, window=args.window,
+    )
 
 
 if __name__ == "__main__":

@@ -2,17 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> 이 레포엔 CLAUDE.md 가 둘이다: **루트(이 파일)** = 전체 아키텍처·규칙, **`apps/web/CLAUDE.md`** (→ `apps/web/AGENTS.md`) = Next 16 브레이킹 체인지 경고. `apps/web` 에서 Next 코드를 만질 땐 후자를 반드시 따른다.
-
 ## Project Overview
 
-**HighProfit** — 서버 없는 개인용 투자 분석 대시보드. 시세는 배치로 수집해 정적 파일(parquet+json)로
-배포하고, 모든 분석(차트·히트맵·계절성·백테스트·13F)은 브라우저에서 계산한다. DB·API 서버·로그인 없음.
-운영비 0원, 나중에 PWA→Capacitor 로 앱 포장 가능한 구조. 탭 5개: 차트 / 히트맵 / 계절성 / 백테스팅 / 펀드.
+**HighProfit** — 개인용 투자 분석 대시보드. 시세는 배치로 수집해 정적 파일(parquet+json)로
+배포하고, 모든 분석(차트·히트맵·계절성·백테스트·13F)은 브라우저에서 계산한다. 현재 DB·API 서버·로그인 없이
+운영비 0원(필요해지면 별도 서비스로 붙인다), 나중에 PWA→Capacitor 로 앱 포장 가능한 구조.
+탭 5개: 차트 / 히트맵 / 계절성 / 백테스팅 / 펀드.
 
 ## Critical Rules (절대 규칙)
 
-- **`output: 'export'` 유지** — SSR·API Routes 도입 금지. 서버 로직이 필요하면 설계가 틀린 것.
+- **`apps/web` 은 `output: 'export'` 가 기본** — Capacitor 포장·운영비 0원이 여기 걸려 있다. 서버 로직이
+  필요하면 **별도 서비스**(Cloudflare Worker 등, `services/<name>/`)로 분리하고 웹앱은 정적으로 둔다.
+  `output: 'export'` 해제(Next SSR·API Routes)는 Capacitor 경로를 포기하는 결정이므로 임의로 하지 말고 먼저 확인받는다.
 - **`packages/core` 에 React/DOM/Next import 금지** — 순수 함수만. 새 함수는 반드시 손검증 케이스로 vitest 작성.
 - **모든 데이터 fetch 는 `apps/web/lib/data.ts` 하나로** — `getBars`가 parquet 를 hyparquet 로 읽음.
 - **parquet 는 snappy 압축 고정** — hyparquet(브라우저 리더)가 zstd 미지원. `pipeline/lib/io.py` 참고.
@@ -28,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 HighProfit/
 ├── apps/web/        # Next 16 App Router (output:export) — 5 탭 + lib/data.ts 게이트
-├── packages/core/   # React 의존성 0. 순수 함수 + vitest 34
+├── packages/core/   # React 의존성 0. 순수 함수 + vitest 38
 ├── pipeline/        # Python 수집·집계·업로드 (python -m pipeline.…)
 └── .github/workflows/  # daily-kr / daily-us / quarterly-13f (cron)
 ```
@@ -42,7 +43,7 @@ HighProfit/
 - **차트**: lightweight-charts v5(캔들), Recharts(통계), D3-hierarchy(트리맵), TradingView 임베드 위젯(실시간)
 - **상태/저장**: zustand, idb(IndexedDB), hyparquet(브라우저 parquet)
 - **core**: 순수 TS + vitest
-- **파이프라인**: Python 3.13 (yfinance, pandas, pyarrow, requests, boto3); pykrx(원래 지정, 현재 KRX 차단)
+- **파이프라인**: Python 3.13 (yfinance, pandas, pyarrow, requests, boto3, lxml). KR/US 모두 yfinance
 - **패키지매니저**: **npm workspaces** (pnpm 아님). 저장소: R2. 배치: GitHub Actions. 호스팅: Vercel.
 
 ## Build & Test Commands
@@ -59,7 +60,8 @@ npm run build -w @highprofit/core            # tsc --noEmit 타입체크만
 
 # Python 파이프라인 (python -m 형식으로 실행, HP_DATA_DIR 로 출력경로 지정)
 python3.13 -m venv pipeline/.venv && pipeline/.venv/bin/pip install -r pipeline/requirements.txt
-pipeline/.venv/bin/python -m pipeline.dev.make_sample --publish   # 로컬 샘플 → public/data
+export HP_DATA_DIR=./apps/web/public/data                         # 로컬 수집 대상
+pipeline/.venv/bin/python -m pipeline.daily.fetch_kr              # KR (yfinance .KS/.KQ)
 ```
 
 ## Domain Context
@@ -77,7 +79,7 @@ pipeline/.venv/bin/python -m pipeline.dev.make_sample --publish   # 로컬 샘�
 - 카드/패널은 `.panel`(글래스), 강조 `text-accent`, 배경 토큰 `bg-surface`/`border-line`.
 - `useSearchParams` 쓰는 페이지는 `<Suspense>` 필요(정적 export). 예: `app/chart/page.tsx`.
 - 컴포넌트는 관심사별 폴더(`components/<domain>/`), 라우트 정의는 `components/layout/nav.ts` 단일 소스.
-- 파이프라인 산출물(`data/`, `apps/web/public/data/`)은 gitignore — `make_sample.py` 로 재생성.
+- 파이프라인 산출물(`data/`, `apps/web/public/data/`)은 gitignore — `pipeline.daily.*` 로 재수집.
 - Next 16 은 브레이킹 체인지 있음 — Next 코드 전 `apps/web/node_modules/next/dist/docs/` 확인(`apps/web/AGENTS.md`).
 
 ## Key Patterns
@@ -86,7 +88,8 @@ pipeline/.venv/bin/python -m pipeline.dev.make_sample --publish   # 로컬 샘�
 - **종목당 parquet 1파일** — `ohlcv/{market}/{ticker}.parquet`, 열 때 ~100KB만 다운로드.
 - **사전집계** — 섹터/펀드는 파이프라인에서 계산(브라우저가 전종목 집계 불가).
 - **테마 연동 차트** — `useChartColors()`로 다크/라이트 색 주입, TradingView 위젯은 테마 변경 시 재주입.
-- **모드 토글** — 차트·히트맵은 "실시간(TV) ↔ 기본(우리 데이터)" 토글, 시장별 기본값 다름.
+- **모드 토글** — 차트·히트맵은 "실시간(TV) ↔ 기본(우리 데이터)" 토글. **차트만** 시장별 기본값이
+  다르고(KR→기본, US→TV), 히트맵은 항상 TV 가 기본이다(TV 소스가 전부 미국이라 한국은 기본 모드로 전환해야 보인다).
 - **URL 계약** — 차트 `?m=&t=`, 히트맵 `?m=&p=` (공유·검색 라우팅).
 
 ## Reference Docs

@@ -52,10 +52,20 @@ function HeatmapView() {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [mode, setMode] = useState<Mode>("tv");
   const [tvSource, setTvSource] = useState("SPX500");
+  /** 드릴다운 — null 이면 섹터 목록, 값이 있으면 그 섹터의 구성종목. */
+  const [sector, setSector] = useState<string | null>(null);
 
   useEffect(() => {
     kvGet<Mode>("heatmap.mode", "tv").then(setMode);
   }, []);
+
+  // 시장을 바꾸면 이전 시장의 섹터에 머물러 있을 수 없다.
+  useEffect(() => setSector(null), [scopeDef.scope]);
+
+  // 데이터가 갱신되며 그 섹터가 사라지면(구성종목 0 등) 빈 화면이 되므로 목록으로 돌린다.
+  useEffect(() => {
+    if (sector && file && !file.sectors.some((s) => s.name === sector)) setSector(null);
+  }, [file, sector]);
 
   useEffect(() => {
     if (mode !== "basic") return;
@@ -88,7 +98,7 @@ function HeatmapView() {
             onClick={() => changeMode("tv")}
             className={cn("text-small px-2.5 py-1 rounded transition-colors", mode === "tv" ? "bg-raised text-fg" : "text-fg-dim hover:text-fg")}
           >
-            실시간(TV)
+            TradingView
           </button>
           <button
             onClick={() => changeMode("basic")}
@@ -104,6 +114,18 @@ function HeatmapView() {
           <>
             <Segment options={SCOPES.map((s) => ({ key: s.key, label: s.label }))} value={mKey} onChange={(k) => setQuery({ m: k })} />
             <Segment options={PERIODS.map((p) => ({ key: p.key, label: p.label }))} value={period} onChange={(k) => setQuery({ p: k })} />
+            {sector && (
+              <div className="flex items-center gap-2 text-small">
+                <button
+                  onClick={() => setSector(null)}
+                  className="text-accent hover:underline"
+                >
+                  ← 섹터 목록으로
+                </button>
+                <span className="text-line">/</span>
+                <span className="text-fg font-semibold">{sector}</span>
+              </div>
+            )}
             <div className="ml-auto">
               <Legend period={period} />
             </div>
@@ -130,6 +152,8 @@ function HeatmapView() {
             file={file}
             period={period}
             scope={scopeDef.scope}
+            sector={sector}
+            onDrill={setSector}
             onSelect={(m, t) => router.push(`/chart?m=${m}&t=${t}`)}
           />
         )}

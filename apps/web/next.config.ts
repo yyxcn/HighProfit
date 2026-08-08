@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 서버 없는 정적 배포. SSR/API Routes 금지 (Capacitor 포장 대비).
+  // 정적 배포가 기본 (Capacitor 포장 대비). 서버 로직은 별도 서비스로 분리 — ../../CLAUDE.md 참고.
   output: "export",
   images: { unoptimized: true },
   transpilePackages: ["@highprofit/core"],

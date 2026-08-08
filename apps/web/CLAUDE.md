@@ -7,8 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## ⚠️ Next 16 주의
 
-@AGENTS.md
-
 Next 관련 코드를 쓰기 전 `node_modules/next/dist/docs/` 의 해당 가이드를 확인한다. 학습 데이터와 API가 다를 수 있다.
 
 ## Commands (apps/web 기준)
@@ -26,12 +24,15 @@ npm run start          # 빌드 미리보기
 
 ## Critical Rules
 
-- **`output: 'export'` (next.config.ts) 유지** — SSR·API Routes·서버 컴포넌트 런타임 fetch 금지.
-  데이터는 전부 클라이언트에서 `lib/data.ts` 로 fetch 한다.
+- **`output: 'export'` (next.config.ts) 가 기본** — 데이터는 전부 클라이언트에서 `lib/data.ts` 로 fetch 한다.
+  서버가 필요한 기능은 **별도 서비스**(Cloudflare Worker 등, `services/<name>/`)로 빼고 `lib/data.ts` 에
+  fetch 함수를 추가하는 방식이 우선 — 정적 JSON이든 서비스 URL이든 진입점이 한 곳이면 갈아타는 비용이 없다.
+  `output: 'export'` 해제(SSR·API Routes)는 Capacitor 경로를 포기하는 결정이라 확인 후에만.
 - **`useSearchParams` 쓰는 페이지는 `<Suspense>` 로 감싼다** (예: `app/chart/page.tsx`, `app/heatmap/page.tsx`). 안 그러면 export 빌드가 실패한다.
 - **모든 데이터 fetch 는 `lib/data.ts` 를 통해서만.** 컴포넌트에서 직접 `fetch` 하지 않는다.
 - **차트 색은 `lib/theme.tsx` 의 `useChartColors()` 로.** hex 하드코딩 금지(다크/라이트 깨짐).
 - **초록/빨강은 손익 방향 전용**, UI 강조는 `text-accent`(페리윙클). 숫자는 `.num` 클래스.
+- **TradingView 위젯엔 `<TvAttribution />` 을 반드시 함께 렌더** — 무료 위젯의 출처 표기는 TV 약관 조건이다.
 - `@highprofit/core` 는 `transpilePackages` 로 소비 — 계산 로직은 여기에 두지 말고 core 에 둔다.
 
 ## Architecture
@@ -69,7 +70,8 @@ apps/web/
 ```
 
 핵심 흐름: 검색(⌘K)→`router.push('/chart?m=&t=')`→페이지가 `lib/data.ts`로 fetch→`@highprofit/core` 계산→차트.
-차트/히트맵은 "실시간(TV)↔기본" 토글이며 **KRX 는 TV 임베드 불가라 한국은 기본 모드가 기본값**.
+차트/히트맵은 "실시간(TV)↔기본" 토글. KRX 는 TV 임베드가 불가해서 **차트는 KR 이면 기본 모드로 자동 전환**
+(`chart/page.tsx`). 히트맵은 그 분기가 없어 항상 TV 가 기본이고, TV 소스가 전부 미국이라 한국은 직접 "기본"으로 바꿔야 한다.
 세부: `../docs/frontend-architecture.md`, 스키마 `../docs/data-schema.md`.
 
 ## Conventions
@@ -78,4 +80,4 @@ apps/web/
 - 라우트 정의는 `components/layout/nav.ts` 단일 소스.
 - 포맷은 `lib/format.ts`(`pct/won/usd/compactEok/ymd/stamp`), 클래스 병합은 `lib/utils.ts` `cn()`.
 - 빈 화면은 `components/common/EmptyState.tsx`(행동 유도), 로딩은 스켈레톤/pulse.
-- `public/data/` 는 gitignore — `../pipeline/dev/make_sample.py --publish` 로 재생성.
+- `public/data/` 는 gitignore — `HP_DATA_DIR=./apps/web/public/data` 로 `pipeline.daily.*` 재수집.

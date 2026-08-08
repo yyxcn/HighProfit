@@ -27,7 +27,7 @@ packages/core/
 │   ├── heatmap.ts        # CLAMP(기간별), heatColor/heatColorFor, capWeightedReturn
 │   ├── fees.ts           # KR_TAX·DEFAULT_ROUND_TRIP_COST·DEFAULT_RF (시행일 주석)
 │   └── index.ts          # 배럴 export (여기로만 공개)
-├── __tests__/            # vitest — returns/metrics/seasonality/backtest/heatmap (34)
+├── __tests__/            # vitest — returns/metrics/seasonality/backtest/heatmap (38)
 ├── vitest.config.ts
 └── tsconfig.json         # strict + noUncheckedIndexedAccess, exports 는 src 직접(빌드 산출물 없음)
 ```

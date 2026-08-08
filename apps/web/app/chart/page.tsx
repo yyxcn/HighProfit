@@ -91,7 +91,7 @@ function ChartView() {
             onClick={() => changeMode("tv")}
             className={cn("text-small px-2.5 py-1 rounded transition-colors", mode === "tv" ? "bg-raised text-fg" : "text-fg-dim hover:text-fg")}
           >
-            실시간(TV)
+            TradingView
           </button>
           <button
             onClick={() => changeMode("basic")}

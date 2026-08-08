@@ -4,14 +4,12 @@ universe.json + 종목별 parquet 를 읽어 섹터별 시총가중 기간수익
 브라우저에서 전종목 집계는 불가하므로 파이프라인에서 미리 만든다.
 
   python -m pipeline.daily.build_sectors                 # US/ETF (+KR if 섹터 존재)
-  python -m pipeline.daily.build_sectors --enrich-kr     # pykrx 로 KR 업종 보강 후 집계
 
 산출: sectors/KR.json, sectors/US.json, sectors/ETF.json
 섹터 수익률 = 구성종목 시총가중 평균 (단순평균 금지 — 소형주 노이즈).
 """
 from __future__ import annotations
 
-import argparse
 import sys
 from datetime import date
 
@@ -67,7 +65,9 @@ def build_scope(scope: str, universe: list[dict]) -> None:
             p: round(sum(c["cap"] * c["ret"][p] for c in consts) / total_cap, 6) for p in PERIODS
         }
         consts.sort(key=lambda c: c["cap"], reverse=True)
-        sectors.append({"name": name, "cap": total_cap, "ret": sec_ret, "top": consts[:20]})
+        # top 은 섹터 드릴다운(트리맵에서 섹터 클릭 시 개별 종목 화면)의 데이터 소스다.
+        # 20 개면 화면이 휑해서 50 으로 둔다. 늘리면 sectors/*.json 이 그만큼 커진다.
+        sectors.append({"name": name, "cap": total_cap, "ret": sec_ret, "top": consts[:50]})
 
     if not sectors:
         # 빈 결과로 R2 의 정상 파일을 덮어쓰지 않는다 (교차 워크플로 안전)
@@ -78,49 +78,10 @@ def build_scope(scope: str, universe: list[dict]) -> None:
     print(f"  sectors/{scope}.json: {len(sectors)} 섹터, {sum(len(s['top']) for s in sectors)} 종목")
 
 
-def enrich_kr_sectors() -> None:
-    """pykrx 업종(섹터) 지수 구성종목으로 KR 유니버스의 섹터를 보강 (best-effort)."""
-    try:
-        from pykrx import stock
-    except Exception as e:  # noqa: BLE001
-        print(f"pykrx 없음, KR 섹터 보강 스킵: {e}", file=sys.stderr)
-        return
-    kr = io.read_json("universe_kr.json", []) or []
-    if not kr:
-        print("universe_kr.json 없음, 보강 스킵", file=sys.stderr)
-        return
-    by_ticker = {u["t"]: u for u in kr}
-    today = date.today().strftime("%Y%m%d")
-    mapped = 0
-    for market in ("KOSPI", "KOSDAQ"):
-        try:
-            for idx in stock.get_index_ticker_list(today, market=market):
-                name = stock.get_index_ticker_name(idx)
-                # 업종 지수만 (시장 대표/규모 지수 제외)
-                if any(k in name for k in ("종합", "200", "150", "100", "대형", "중형", "소형", "배당")):
-                    continue
-                try:
-                    members = stock.get_index_portfolio_deposit_file(idx)
-                except Exception:  # noqa: BLE001
-                    continue
-                for t in members:
-                    if t in by_ticker and by_ticker[t]["s"] == "기타":
-                        by_ticker[t]["s"] = name
-                        mapped += 1
-        except Exception as e:  # noqa: BLE001
-            print(f"  {market} 업종 조회 실패: {e}", file=sys.stderr)
-    io.write_json("universe_kr.json", list(by_ticker.values()))
-    print(f"KR 섹터 보강: {mapped} 종목 매핑")
-
 
 def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--enrich-kr", action="store_true", help="pykrx 로 KR 업종 보강 후 집계")
-    args = ap.parse_args()
-
-    if args.enrich_kr:
-        enrich_kr_sectors()
-
+    # 순서 주의: universe.json 은 build_universe 가 쓴다. 그보다 먼저 돌리면
+    # 직전 실행의 낡은 유니버스로 집계된다.
     universe = io.read_json("universe.json", None)
     if not universe:
         # universe.json 이 아직 없으면 부분 결과 합치기

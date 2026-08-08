@@ -1,7 +1,8 @@
 # Architecture
 
-서버 없는 정적 배포. 시세는 배치로 수집→정적 파일(parquet+json), 모든 분석은 브라우저에서
-`@highprofit/core` 순수 함수로 계산. DB·API 서버·로그인 없음.
+정적 배포가 기본. 시세는 배치로 수집→정적 파일(parquet+json), 모든 분석은 브라우저에서
+`@highprofit/core` 순수 함수로 계산. 현재 DB·API 서버·로그인 없음 — 서버가 필요한 기능이 생기면
+웹앱은 정적으로 둔 채 별도 서비스(`services/<name>/`)로 붙인다(루트 `CLAUDE.md` 참고).
 
 ## 디렉터리 트리
 
@@ -46,24 +47,22 @@ HighProfit/
 │   │   ├── heatmap.ts              # 기간별 클램핑 색 보간, 시총가중
 │   │   ├── fees.ts                 # 수수료·세율 상수(시행일 주석)
 │   │   └── index.ts                # 배럴 export
-│   └── __tests__/                  # vitest 34 (손검증 케이스 포함)
+│   └── __tests__/                  # vitest 38 (손검증 케이스 포함)
 │
 ├── pipeline/                       # Python 3.13 — python -m pipeline.<pkg>.<script>
 │   ├── lib/io.py                   # parquet(snappy)/json 쓰기, meta, R2(S3) 클라이언트
+│   ├── lib/yfetch.py               # yfinance 청크 수집 공통 (KR/US 공유)
 │   ├── daily/
-│   │   ├── fetch_kr.py             # pykrx KR 수집 (이 환경 KRX 차단)
+│   │   ├── fetch_kr.py             # yfinance KR 수집 (.KS/.KQ)
 │   │   ├── fetch_us.py             # yfinance US 수집
 │   │   ├── build_universe.py       # KR+US 병합 → universe.json
-│   │   ├── build_sectors.py        # 시총가중 섹터 집계 (--enrich-kr)
+│   │   ├── build_sectors.py        # 시총가중 섹터 집계 (build_universe 뒤에)
 │   │   ├── upload_r2.py            # R2 동기화 (etag 미변경 스킵)
 │   │   └── sync_down.py            # R2→로컬 (교차 워크플로 병합)
 │   ├── quarterly/fetch_13f.py      # SEC EDGAR 13F 파싱
-│   ├── dev/                        # 우회·초기적재
-│   │   ├── make_sample.py          # 합성 데이터(외부API 불필요)
+│   ├── dev/                        # 초기적재·대량수집 (손으로 실행)
 │   │   ├── build_full_universe.py  # KIND+nasdaqtrader 전종목 검색인덱스
-│   │   ├── fetch_kr_yf.py          # yfinance .KS/.KQ 로 KR 전종목
-│   │   ├── fetch_us_all.py         # yfinance US 전종목
-│   │   └── expand_us.py            # S&P500 + 시총
+│   │   └── enrich_meta.py          # KR/US 시총·섹터 보강 (Ticker.info)
 │   └── requirements.txt
 │
 ├── .github/workflows/              # daily-kr / daily-us / quarterly-13f (cron)

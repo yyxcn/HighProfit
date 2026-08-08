@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTheme } from "@/lib/theme";
+import { TvAttribution } from "@/components/common/TvAttribution";
 
 /**
  * TradingView Advanced Chart 임베드 위젯 (실시간·분봉·풀 UI).
@@ -53,5 +54,10 @@ export function TradingViewChart({ symbol }: { symbol: string }) {
     };
   }, [symbol, theme]);
 
-  return <div ref={ref} className="w-full h-full" />;
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div ref={ref} className="flex-1 min-h-0" />
+      <TvAttribution />
+    </div>
+  );
 }

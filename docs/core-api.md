@@ -20,10 +20,11 @@ React/DOM 의존성 0. 순수 함수만. 모든 함수 vitest(`packages/core/__t
 - `seasonality(bars, fromYear, toYear)` → `SeasonalPoint[]`
   - 로그수익률을 MM-DD 그룹핑 → `exp(로그평균)`으로 기하평균 경로. 윤년 02-29 제외.
   - 필드: `mmdd,n,avg,max,min,winRate,composite,tStat`.
-- `monthlySeasonality(...)` → 월별(표본 신뢰도 높음).
+- `monthlySeasonality(...)` → 월별(표본 신뢰도 높음). `MonthlyPoint[]`
+- `monthlyReturnMatrix(bars, fromYear, toYear)` → `MonthlyReturnRow[]` — 계절성 탭의 연도×월 매트릭스.
 
 ## backtest.ts (명세 6-4)
-- `backtest(input)` → `BacktestResult`
+- `backtest(input: BacktestInput)` → `BacktestResult` — 자산은 `BacktestAsset[]`, 주기는 `Rebalance`.
   - **공통 거래일 inner join**(휴장일 상이 대응).
   - 리밸런싱 비용 = `0.5 × Σ|목표−현재| × costRate`(왕복).
   - 미국 달러 기준(환율 미반영), 수정주가라 배당 재투자 반영.

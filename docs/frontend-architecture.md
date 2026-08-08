@@ -35,8 +35,9 @@
 
 - `components/chart/PriceChart.tsx` — lightweight-charts v5 캔들+거래량(3:1 pane)+SMA. "기본" 모드.
 - `components/chart/TradingViewChart.tsx` — TV Advanced Chart 임베드. 미국 기본, 한국 폴백 불가(KRX 임베드 막힘).
+- `components/common/TvAttribution.tsx` — TV 무료 위젯의 **출처 표기(약관 조건)**. 위젯을 쓰는 모든 곳에서 함께 렌더한다.
 - `lib/tvSymbol.ts` — (market,ticker)→TV 심볼(`KRX:005930` / `AAPL`).
-- `components/heatmap/Treemap.tsx` — D3 트리맵(우리 sectors). `components/heatmap/TradingViewHeatmap.tsx` — TV 히트맵 위젯.
+- `components/heatmap/Treemap.tsx` — D3 트리맵(우리 sectors). **2단 드릴다운**: `sector=null` 이면 섹터 단위(클릭 → `onDrill`), 값이 있으면 그 섹터의 구성종목(클릭 → 차트 이동). 한 화면에 전 종목을 펼치면 섹터가 많은 KR 에서 타일이 실오라기가 된다. `components/heatmap/TradingViewHeatmap.tsx` — TV 히트맵 위젯.
 - `components/seasonality/*`, `components/backtest/*`, `components/funds/Donut.tsx` — Recharts.
 - 차트 색은 **`useChartColors()`** 로 테마 연동(하드코딩 hex 금지).
 

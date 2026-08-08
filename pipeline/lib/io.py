@@ -1,7 +1,6 @@
 """공통 IO — 경로, parquet/json 쓰기, R2 업로드, 휴장일 스킵 판정."""
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,6 +10,19 @@ import pandas as pd
 # 산출물 루트. 로컬은 repo/data, CI 는 동일. 웹 dev 는 apps/web/public/data 로 복사.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(os.environ.get("HP_DATA_DIR", REPO_ROOT / "data"))
+
+# 시총(universe 의 `c`)은 KR/US 를 한 축에 놓기 위해 전부 **억 KRW** 로 저장한다
+# (히트맵 트리맵 면적이 시총가중이라 단위가 섞이면 화면이 깨진다).
+# 정밀 환율이 아니라 표시 스케일 통일용 고정값 — 바꾸면 US 시총이 전부 재계산돼야 한다.
+USDKRW = 1300
+
+
+def usd_to_eok(usd: float | int | None) -> int:
+    """USD 시총/순자산 → 억 KRW. 값이 없으면 0."""
+    if not usd:
+        return 0
+    return round(float(usd) * USDKRW / 1e8)
+
 
 # OHLCV parquet 스키마 (명세 5-3). close 는 반드시 수정주가.
 OHLCV_COLUMNS = ["date", "open", "high", "low", "close", "volume"]
@@ -52,11 +64,6 @@ def write_ohlcv(market: str, ticker: str, df: pd.DataFrame) -> Path:
     # snappy: hyparquet(브라우저 리더)가 기본 지원하는 코덱
     df.to_parquet(p, engine="pyarrow", compression="snappy", index=False)
     return p
-
-
-def content_hash(df: pd.DataFrame) -> str:
-    """휴장일 스킵용 지문. 직전 영업일과 동일하면 업로드 건너뜀 (명세 5-1)."""
-    return hashlib.sha1(pd.util.hash_pandas_object(df, index=False).values.tobytes()).hexdigest()
 
 
 def now_kst_iso() -> str:

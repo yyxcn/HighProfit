@@ -94,16 +94,15 @@ export default function SeasonalityPage() {
         <div className="min-w-0">
           <div className="flex items-center gap-2.5 mb-2">
             <span className="px-2 py-0.5 rounded-full border border-accent/30 bg-accent/10 text-accent text-micro uppercase tracking-wider">
-              정직한 계절성
+              계절성
             </span>
             <span className="text-small text-fg-mute">기간 분석 · 과거 평균</span>
           </div>
           <h1 className="font-display text-h1 text-fg truncate">
-            계절성{sec && <span className="text-fg-dim"> · {sec.n}</span>}
+            {sec && <span className="text-fg-dim"> {sec.n}</span>}
           </h1>
           <p className="text-small text-fg-dim mt-1.5 max-w-xl leading-relaxed">
-            연간 누적 경로를 기하평균으로 재구성해 반복되는 시기별 패턴을 봅니다. 표본이 적거나
-            통계적으로 약한 구간은 회색으로 정직하게 표시합니다.
+            연간 누적 경로를 기하평균으로 재구성해 반복되는 시기별 패턴을 봅니다.
           </p>
         </div>
 

@@ -184,7 +184,7 @@ function Hero() {
 
 /* ── 마퀴 스트립 ── */
 function Marquee() {
-  const items = ["차트", "히트맵", "계절성", "백테스팅", "13F 펀드", "KOSPI", "S&P 500", "NASDAQ", "SERVERLESS", "₩0 운영비"];
+  const items = ["S&P 500", "NASDAQ", "DJIA", "KOSPI", "KOSDAQ", "NIKKEI", "SHCOMP", "DAX", "FTSE", "HSI"];
   const row = [...items, ...items];
   return (
     <div className="border-y border-line bg-surface/40 overflow-hidden py-4">

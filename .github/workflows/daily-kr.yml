@@ -9,10 +9,18 @@ concurrency:
   group: daily-kr
   cancel-in-progress: false
 
+env:
+  HP_DATA_DIR: ${{ github.workspace }}/data
+  R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  R2_BUCKET: ${{ secrets.R2_BUCKET }}
+
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # KR 약 2.8k 종목. US(11.5k, 4시간) 기준으로 환산하면 1시간 내외지만 여유를 둔다.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
@@ -24,33 +32,29 @@ jobs:
       - name: Install deps
         run: pip install -r pipeline/requirements.txt
 
-      # R2 에서 기존 parquet 를 받아와 휴장일 스킵 판정에 활용 (선택)
-      - name: Fetch KR OHLCV + universe
-        env:
-          HP_DATA_DIR: ${{ github.workspace }}/data
+      # CI 는 빈 체크아웃에서 시작한다. fetch_kr 이 universe_kr.json 을 대상 목록으로
+      # 읽으므로 반드시 먼저 내려받아야 한다. ohlcv 는 휴장일 스킵 판정용(없어도 동작).
+      - name: Sync universe + OHLCV from R2
+        run: |
+          python -m pipeline.daily.sync_down --keys universe_kr.json universe_us.json
+          python -m pipeline.daily.sync_down --prefix ohlcv/KR || true
+
+      # 신규상장·상장폐지 반영 + 워런트·우선주 등 비주식 제외 (KIND, 로그인 불필요)
+      - name: Rebuild symbol index
+        run: python -m pipeline.dev.build_full_universe
+
+      - name: Fetch KR OHLCV
         run: python -m pipeline.daily.fetch_kr
 
-      - name: Sync US universe from R2 (병합용)
-        env:
-          HP_DATA_DIR: ${{ github.workspace }}/data
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-        run: python -m pipeline.daily.sync_down --keys universe_us.json
+      # 시총 비어 있는 종목만 조회하므로 첫 실행 이후엔 신규상장분(수십 건)만 걸린다.
+      - name: Enrich KR 시총·섹터 (증분)
+        run: python -m pipeline.dev.enrich_meta --market KR
 
-      - name: KR 업종 보강 + 섹터 집계 → universe.json 병합
-        env:
-          HP_DATA_DIR: ${{ github.workspace }}/data
+      # 순서 주의: build_sectors 는 universe.json 을 읽고 build_universe 가 그걸 쓴다.
+      - name: Build universe + sectors
         run: |
-          python -m pipeline.daily.build_sectors --enrich-kr
           python -m pipeline.daily.build_universe
+          python -m pipeline.daily.build_sectors
 
       - name: Upload to R2
-        env:
-          HP_DATA_DIR: ${{ github.workspace }}/data
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m pipeline.daily.upload_r2

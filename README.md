@@ -2,9 +2,9 @@
 
 ![HighProfit 랜딩 화면](docs/assets/landing.png)
 
-> **서버 없는 개인용 투자 분석 대시보드.**
-> 시세는 배치로 수집해 정적 파일(parquet·json)로 배포하고, 모든 분석(차트·히트맵·계절성·백테스트·13F)은 **브라우저에서 계산**한다.
-> DB·API 서버·로그인 없음. 운영비 0원. 개인 설정은 IndexedDB에 로컬 저장.
+> **개인용 투자 분석 보조 도구**
+> 시세는 배치로 수집해 정적 파일로 배포하고, 모든 분석은 **브라우저에서 계산**한다.
+
 
 ---
 
@@ -31,10 +31,12 @@ no-cache 로 재검증하므로, 저장소(R2)만 갱신되면 새로고침으�
 export HP_DATA_DIR=./data
 
 # 일간 — 시세·유니버스·섹터
-python -m pipeline.daily.fetch_kr
-python -m pipeline.daily.fetch_us
-python -m pipeline.daily.build_sectors
+python -m pipeline.dev.build_full_universe    # 종목 인덱스 재구축 (신규상장 반영)
+python -m pipeline.daily.fetch_kr             # yfinance .KS/.KQ
+python -m pipeline.daily.fetch_us             # universe_us.json 전종목 (~25분)
+python -m pipeline.dev.enrich_meta --market all   # 시총·섹터 (거래대금 상위 2000)
 python -m pipeline.daily.build_universe
+python -m pipeline.daily.build_sectors
 python -m pipeline.daily.upload_r2            # R2 동기화 (S3 호환 API)
 
 # 분기 — SEC EDGAR 13F
@@ -43,14 +45,34 @@ python -m pipeline.quarterly.fetch_13f
 ```
 
 **필수 환경변수:** `R2_ACCOUNT_ID` · `R2_ACCESS_KEY_ID` · `R2_SECRET_ACCESS_KEY` · `R2_BUCKET` · `SEC_USER_AGENT`
+KR/US 모두 yfinance 라 별도 계정·키가 필요 없다.
 
-### 3) 로컬 샘플만 다시 만들기
+### 3) 로컬 개발용 — R2 없이 `public/data` 에 직접
 
-외부 API·R2 없이 화면 확인용 데이터를 재생성한다(가장 빠른 갱신).
+배포 없이 `npm run dev` 로만 확인할 때. `upload_r2` 를 빼고 출력 경로만 바꾸면 된다.
 
 ```bash
-pipeline/.venv/bin/python -m pipeline.dev.make_sample --publish   # → apps/web/public/data
+export HP_DATA_DIR=./apps/web/public/data
+
+pipeline/.venv/bin/python -m pipeline.dev.build_full_universe
+pipeline/.venv/bin/python -m pipeline.daily.fetch_kr
+pipeline/.venv/bin/python -m pipeline.daily.fetch_us
+pipeline/.venv/bin/python -m pipeline.dev.enrich_meta --market all
+pipeline/.venv/bin/python -m pipeline.daily.build_universe
+pipeline/.venv/bin/python -m pipeline.daily.build_sectors
 ```
+
+> Claude Code 에서는 `/data` 슬래시 커맨드가 위 순서를 그대로 실행한다.
+>
+> **시세는 전종목**(US 약 11.5k, KR 약 2.8k), **시총·섹터는 시장별 거래대금 상위 2000만** 채운다.
+> 목록 관리는 `dev/build_full_universe.py`(워런트·우선주 등 비주식 제외), 시총·섹터는
+> `dev/enrich_meta.py`, `daily/fetch_us.py` 는 시세만 — 셋이 서로 덮어쓰지 않는다.
+>
+> 상위 2000 인 이유: 히트맵은 섹터당 상위 50개만 그리고 섹터 색은 시총가중이라
+> 대형주가 결정한다. 게다가 **US 히트맵은 TradingView 임베드가 기본**이라 우리 트리맵을 볼 일이 적다.
+> 반면 야후가 연속 요청을 throttle 해서 전종목이면 20시간 넘게 걸린다.
+> **KR 은 TV 임베드가 불가**해 우리 트리맵이 유일한 수단이라 시총·섹터가 그만큼 더 중요하다.
+> yfinance 가 KR 도 GICS 섹터를 주므로 US 와 같은 11개 축을 공유한다.
 
 ---
 
@@ -109,28 +131,28 @@ HighProfit/                    npm workspaces (monorepo)
 | 차트 | lightweight-charts v5(캔들), Recharts(통계), D3-hierarchy(트리맵), TradingView 임베드(실시간) |
 | 상태·저장 | zustand, idb(IndexedDB), hyparquet(브라우저 parquet 리더) |
 | core | 순수 TypeScript + vitest |
-| 파이프라인 | Python 3.13 — yfinance, pandas, pyarrow, requests, boto3 |
+| 파이프라인 | Python 3.13 — yfinance, pandas, pyarrow, requests, boto3, lxml |
 | 인프라 | 저장 R2 · 배치 GitHub Actions · 호스팅 Vercel · 패키지매니저 **npm workspaces** |
 
 ---
 
 ## 빠른 시작 (로컬)
 
-외부 API·R2 없이 **샘플 데이터**로 전체 앱을 바로 띄운다.
-
 ```bash
 # 1) 의존성 설치 (워크스페이스 전체)
 npm install
-
-# 2) 샘플 데이터 생성 → apps/web/public/data 에 배치
 python3.13 -m venv pipeline/.venv
 pipeline/.venv/bin/pip install -r pipeline/requirements.txt
-pipeline/.venv/bin/python -m pipeline.dev.make_sample --publish
+
+# 2) 데이터 수집 → apps/web/public/data
+#    ↑ 위 "데이터 갱신 3) 로컬 개발용" 참고. 계정·API 키는 필요 없고,
+#      최초 수집은 전종목 기준 수 시간 걸린다.
 
 # 3) 개발 서버
 npm run dev            # → http://localhost:3000
 ```
 
+> `apps/web/public/data/` 는 gitignore 다 — 클론 직후엔 비어 있으므로 2)를 먼저 돌려야 화면이 뜬다.
 > Node 20+ / Python 3.13 권장. 데이터 소스 경로는 `NEXT_PUBLIC_DATA_BASE`(기본 `/data`) 로 바꿀 수 있다.
 
 ---
@@ -170,6 +192,7 @@ npm run build -w @highprofit/core             # tsc --noEmit 타입체크만
 - yfinance 는 개인·비상업 전제.
 - 계산 결과만 제공하고 종목 추천은 하지 않는다(유사투자자문 회피).
 - 한국은 TradingView 무료 임베드에 KRX 시세가 안 뜬다(라이선스) → 한국은 우리 일봉, 미국은 TV 실시간이 기본값.
+- TV 무료 위젯은 **출처 표기 링크가 약관 조건**이다 — `components/common/TvAttribution.tsx` 를 위젯과 함께 렌더한다. 제거 금지.
 
 ---
 

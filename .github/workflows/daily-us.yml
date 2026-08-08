@@ -19,7 +19,9 @@ env:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    # 전종목(약 11.5k) 실측 4시간. 청크(60개)를 써도 야후가 대량 구간에서 throttle 해
+    # 1.26초/종목까지 떨어진다(소량 샘플은 0.18초). GitHub Actions 상한은 6시간.
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,20 +30,31 @@ jobs:
           cache: pip
       - run: pip install -r pipeline/requirements.txt
 
-      - name: Fetch US OHLCV + universe
-        run: python -m pipeline.daily.fetch_us
-
-      # KR 유니버스/ETF parquet 를 받아와 병합·ETF 섹터 집계에 사용
-      - name: Sync KR universe from R2
+      # CI 는 빈 체크아웃에서 시작한다. fetch_us 가 universe_us.json 을 대상 목록으로
+      # 읽으므로 반드시 먼저 내려받아야 한다. ohlcv 는 휴장일 스킵 판정용(없어도 동작).
+      - name: Sync universe + OHLCV from R2
         run: |
-          python -m pipeline.daily.sync_down --keys universe_kr.json
+          python -m pipeline.daily.sync_down --keys universe_us.json universe_kr.json
+          python -m pipeline.daily.sync_down --prefix ohlcv/US || true
           python -m pipeline.daily.sync_down --prefix ohlcv/KR || true
 
-      - name: Build universe.json (KR+US 병합)
-        run: python -m pipeline.daily.build_universe
+      # 신규상장·상장폐지 반영 + 워런트·우선주 등 비주식 제외 (약 1분)
+      - name: Rebuild symbol index
+        run: python -m pipeline.dev.build_full_universe
 
-      - name: Build sectors (US, ETF)
-        run: python -m pipeline.daily.build_sectors
+      - name: Fetch US OHLCV (전종목)
+        run: python -m pipeline.daily.fetch_us
+
+      # 거래대금 상위 2000 중 시총이 빈 종목만 — 첫 실행 이후엔 신규상장분(수십 건)만 걸린다.
+      # 범위를 넓히면 야후 throttle 로 수 시간~하루가 되므로 --top 을 키우지 말 것.
+      - name: Enrich US 시총·섹터 (증분)
+        run: python -m pipeline.dev.enrich_meta --market US
+
+      # 순서 주의: build_sectors 는 universe.json 을 읽고 build_universe 가 그걸 쓴다.
+      - name: Build universe + sectors
+        run: |
+          python -m pipeline.daily.build_universe
+          python -m pipeline.daily.build_sectors
 
       - name: Upload to R2
         run: python -m pipeline.daily.upload_r2

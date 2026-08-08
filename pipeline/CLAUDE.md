@@ -10,10 +10,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **항상 모듈 형식으로 실행**: `python -m pipeline.<pkg>.<script>` (패키지 상대 import). 파일 직접 실행 금지.
 - **출력 위치는 env `HP_DATA_DIR`** (기본 `repo/data`). 로컬 웹 확인은 `apps/web/public/data` 로 지정.
 - **parquet 는 snappy 압축 고정** — hyparquet(브라우저 리더)가 zstd 미지원. `lib/io.py:write_ohlcv` 만 통해 쓴다.
-- **수정주가로 저장** — yfinance `auto_adjust=True`, pykrx `adjusted=True`. 미반영 시 계절성·백테스트 오염.
+- **수정주가로 저장** — yfinance `auto_adjust=True`. 미반영 시 계절성·백테스트 오염.
+- **증분 수집이 기본** — 기존 parquet 뒤에 최근 구간만 붙인다. 분할이 나면 야후가 과거를 재계산하므로 겹치는 구간 종가를 비교해 어긋나면 그 종목만 전량 재수집(`lib/yfetch.py`).
 - **섹터 수익률 = 시총가중 평균**(단순평균 금지). 빈 결과로 R2 정상 파일을 덮지 않는다(가드 있음).
 - **SEC EDGAR 는 `SEC_USER_AGENT` 필수**, 초당 <10요청. 휴장일이면(최신 봉 == 직전) 업로드 스킵.
-- pykrx/yfinance 는 **개인·비상업 전제** — 상업/트래픽 시 유료 데이터나 증권사 OpenAPI(KIS 등)로 교체.
+- **KR 시세·시총·섹터는 전부 yfinance 로 받는다** — 거래소 사이트를 직접 긁는 라이브러리는 도입하지 않는다(이력이 짧고 사이트 구조 변경에 취약). 다른 소스를 섞지 말 것.
+- yfinance 는 **개인·비상업 전제** — 상업/트래픽 시 유료 데이터나 증권사 OpenAPI(KIS 등)로 교체.
 
 ## Architecture
 
@@ -21,32 +23,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pipeline/
 ├── lib/io.py               # ★ parquet(snappy)/json 쓰기, meta.json 갱신, R2(S3) 클라이언트, 경로 상수
 ├── daily/                  # 일간 (GitHub Actions daily-kr/daily-us)
-│   ├── fetch_kr.py         # pykrx KR 수집 — 이 환경 KRX 차단(로그인 요구)
+│   ├── fetch_kr.py         # yfinance KR 수집 (.KS/.KQ) — lib/yfetch.py 공유
 │   ├── fetch_us.py         # yfinance US 수집
 │   ├── build_universe.py   # universe_kr + universe_us → universe.json
-│   ├── build_sectors.py    # 시총가중 섹터 집계 (--enrich-kr: pykrx 업종 보강)
+│   ├── build_sectors.py    # 시총가중 섹터 집계 (universe.json 을 읽으므로 build_universe 뒤에)
 │   ├── upload_r2.py        # R2 동기화 (etag 미변경 스킵)
 │   └── sync_down.py        # R2→로컬 (교차 워크플로 병합/스킵판정)
 ├── quarterly/fetch_13f.py  # SEC EDGAR 13F 파싱, cusip→ticker, 전분기 대비 변화
-├── dev/                    # 우회·초기적재 (pykrx 막힘 대응 / 대량수집)
-│   ├── make_sample.py      # 합성 데이터(외부 API 불필요, e2e 검증) — --publish 로 public/data
-│   ├── build_full_universe.py  # KIND(KR) + nasdaqtrader(US) 전종목 검색 인덱스
-│   ├── fetch_kr_yf.py      # yfinance .KS/.KQ 로 KR 전종목 OHLCV
-│   ├── fetch_us_all.py     # yfinance US 전종목 OHLCV
-│   └── expand_us.py        # S&P500(위키) + 시총(slickcharts)
-├── config/                 # us_universe.csv, funds.csv, cusip_map.csv
-└── requirements.txt        # pandas, pyarrow, yfinance, requests, boto3 (+pykrx)
+├── dev/                    # 초기적재·대량수집 (손으로 실행. Actions 는 안 씀)
+│   ├── build_full_universe.py  # KIND(KR) + nasdaqtrader(US) 전종목 검색 인덱스(비주식 제외)
+│   └── enrich_meta.py       # KR/US 시총·섹터 보강 (Ticker.info, 거래대금 상위 2000만)
+├── config/                 # funds.csv, cusip_map.csv
+└── requirements.txt        # pandas, pyarrow, yfinance, requests, boto3, lxml (30개 핀)
 ```
 
 ## Data Sources
 
 | 소스 | 용도 | 상태 |
 |---|---|---|
-| pykrx | KR 시세(원래 지정) | ❌ KRX 차단 |
-| KRX KIND | KR 종목목록(이름·코드·시장·업종) | ✅ 무료 |
-| yfinance | US + KR 시세(`.KS`/`.KQ`) | ✅ (시총 quote 는 막힘) |
-| 네이버 금융 | KR 시총(종목명 매칭) | ✅ |
-| slickcharts | S&P500 지수비중(시총 프록시) | ✅ |
+| KRX KIND | KR 종목목록(이름·코드·시장·업종) | ✅ 무료·로그인 불필요 |
+| nasdaqtrader | US 전종목 심볼 디렉터리 | ✅ 무료 |
+| yfinance | US 시세 + `Ticker.info`(시총·섹터, ETF 는 `totalAssets`·`category`) | ✅ 대량 구간 throttle 있음 |
 | SEC EDGAR | 13F | ✅ (UA 필수) |
 
 ## Commands
@@ -55,8 +52,7 @@ pipeline/
 python3.13 -m venv .venv && .venv/bin/pip install -r requirements.txt   # (시스템에 3.12 없음)
 # 아래는 repo 루트에서 실행:
 export HP_DATA_DIR=$PWD/apps/web/public/data
-pipeline/.venv/bin/python -m pipeline.dev.make_sample --publish         # 로컬 샘플(외부 API 불필요)
-pipeline/.venv/bin/python -m pipeline.dev.fetch_kr_yf --limit 200       # KR 실수집(테스트)
+pipeline/.venv/bin/python -m pipeline.daily.fetch_kr --tickers 005930   # KR 실수집(테스트)
 SEC_USER_AGENT="HighProfit you@x.com" \
   pipeline/.venv/bin/python -m pipeline.quarterly.fetch_13f --limit 1   # 13F(테스트)
 ```

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTheme } from "@/lib/theme";
+import { TvAttribution } from "@/components/common/TvAttribution";
 
 /**
  * TradingView Stock Heatmap 임베드 위젯 (실시간).
@@ -56,5 +57,10 @@ export function TradingViewHeatmap({ dataSource = "SPX500" }: { dataSource?: str
     };
   }, [dataSource, theme]);
 
-  return <div ref={ref} className="w-full h-full" />;
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div ref={ref} className="flex-1 min-h-0" />
+      <TvAttribution />
+    </div>
+  );
 }
