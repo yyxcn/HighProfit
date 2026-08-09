@@ -82,18 +82,84 @@ export async function getFundHolding(file: string): Promise<FundHolding> {
   return getJSON<FundHolding>(`funds/${file}`);
 }
 
+/** 펀드 성과 랭킹 (Overview 탭). build_fund_stats.py 산출물 */
+export async function getFundPerformance(): Promise<FundPerformanceFile> {
+  return getJSON<FundPerformanceFile>("funds/performance.json");
+}
+
+/** 분기별 인기 보유/신규 매수/청산 (인기 주식 탭) */
+export async function getFundPopular(): Promise<FundPopularFile> {
+  return getJSON<FundPopularFile>("funds/popular.json");
+}
+
 export interface FundIndexEntry {
   cik: string;
   name: string;
+  manager: string;
+  category: string;
   latest: string; // 'YYYYQn'
   file: string; // funds/<cik>_<quarter>.json
   aum: number;
   positions: number;
   filedAt: string;
+  inception: string; // 성과 계산이 가능한 첫 분기
+  quarters: number;
 }
 export interface FundIndex {
   asOf: string;
   funds: FundIndexEntry[];
+}
+
+/** 매핑 커버리지 기반 추정 신뢰도 — high 는 UI 에서 표시하지 않는다 */
+export type FundReliability = "high" | "mid" | "low";
+
+export interface FundPerformance {
+  cik: string;
+  name: string;
+  manager: string;
+  category: string;
+  inception: string; // 'YYYYQn'
+  inceptionDate: string; // 'YYYY-MM-DD'
+  latest: string; // 마지막으로 13F를 낸 분기
+  active: boolean; // 공시가 끊긴 펀드는 아예 랭킹에서 빠지므로 항상 true
+  quarters: number;
+  aum: number;
+  positions: number;
+  ret1y: number | null;
+  cagr3y: number | null;
+  cagr5y: number | null;
+  cagrInception: number | null;
+  totalReturn: number;
+  coverage: number; // 0~1, 가치 기준 티커 매핑률
+  reliability: FundReliability;
+  curve: [string, number][]; // 월말 [날짜, 지수(시작=1)]
+}
+export interface FundPerformanceFile {
+  asOf: string;
+  funds: FundPerformance[];
+}
+
+export interface PopularStock {
+  cusip: string;
+  ticker: string | null;
+  name: string;
+  managers: number;
+  value: number;
+  top: string[]; // 평가액 상위 3 매니저
+}
+export type PopularKind = "hold" | "new" | "exit";
+export interface PopularQuarter {
+  quarter: string;
+  filed: number; // 이 분기에 신고한 펀드 수
+  total: number;
+  all: Record<PopularKind, PopularStock[]>;
+  focused: Record<PopularKind, PopularStock[]>; // 인덱스성(광범위 보유) 펀드 제외
+}
+export interface FundPopularFile {
+  asOf: string;
+  topN: number;
+  broadThreshold: number;
+  quarters: PopularQuarter[];
 }
 
 export type HoldingChange = "new" | "add" | "reduce" | "exit" | "hold";

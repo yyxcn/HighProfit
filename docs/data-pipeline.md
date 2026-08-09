@@ -20,7 +20,11 @@
 
 - `pipeline/lib/io.py` — parquet(**snappy**)/json 쓰기, `meta.json` 갱신, R2(S3호환) 클라이언트, 경로 상수.
 - `lib/yfetch.py` — yfinance 청크 수집 공통(KR/US 공유). `daily/fetch_kr.py`(`.KS`/`.KQ`) · `daily/fetch_us.py` 는 대상 목록만 정해 넘기는 얇은 래퍼 · `daily/build_universe.py` · `daily/build_sectors.py`(시총가중, cap≤0 제외) · `daily/upload_r2.py` · `daily/sync_down.py`.
-- `quarterly/fetch_13f.py` — EDGAR 13F 파싱, cusip→ticker, 전분기 대비 신규/증가/감소/청산.
+- `quarterly/` — 13F 3단 파이프라인. **fetch → map → build 순서**로 돌린다.
+  - `fetch_13f.py` — EDGAR 13F 파싱. 펀드당 최신 `--quarters`(기본 40 = 10년)개 분기를 `pipeline/.cache/13f/{cik}_{quarter}.json` 에 적재한다(이력 원본은 수십 MB 라 **배포하지 않는다**). 최신 분기만 `funds/{cik}_{quarter}.json` 으로 내보내고 `funds/index.json` 을 갱신. 캐시가 있으면 재요청하지 않아 재실행이 싸다. 옵션(putCall)·채권(`sshPrnamtType != SH`)·더미 행(CUSIP `000000000`)은 롱온리 주식 집계에서 제외. **정정신고(13F-HR/A)도 후보**로 넣고 분기별로 최신부터 시도해 내용이 빈 신고는 건너뛴다 — Norges Bank 는 원본을 더미 한 줄로 내고 실제 보유를 정정으로 낸다.
+  - `dev/find_13f_ciks.py` — `config/fund_candidates.csv`(search,manager,category)의 이름을 EDGAR 회사검색 + submissions API 로 CIK 해석해 `config/funds.csv` 를 생성. 최근 400일 내 13F 이력이 없으면 탈락시킨다(공시중단 매니저 자동 제외). **CIK 를 손으로 적거나 추측하지 않는다.**
+  - `map_cusips.py` — 캐시의 모든 CUSIP 을 **OpenFIGI** 배치 매핑으로 티커화해 `config/cusip_map.csv` 갱신. 무인증도 되지만 느리다(25요청/분×10건) — `OPENFIGI_API_KEY` 가 있으면 100건/요청. 실패분은 `.cache/figi_missed.txt` 에 남아 재실행 때 건너뛴다(`--retry-missed` 로 무시). 티커는 yfinance 표기로 정규화(`BRK/B`→`BRK-B`).
+  - `build_fund_stats.py` — 캐시 + `ohlcv/US` 로 `funds/performance.json`(1Y/3Y/5Y/설정후 성과, 월말 곡선)과 `funds/popular.json`(분기별 인기 보유/신규 매수/청산 Top30)을 만든다. **성과는 공시일(filedAt) 기준 분기 리밸런싱 가정의 추정치** — 분기말 기준으로 잡으면 45일 뒤에나 알 수 있는 정보를 미리 쓰는 후행편향이 된다. 티커가 매핑되고 가격이 있는 종목만 쓰고 비중은 그 안에서 재정규화하며, 그 커버리지를 `reliability` 로 노출한다.
 - `dev/` (초기적재·대량수집. 손으로 실행하며 Actions 는 쓰지 않는다):
   - `build_full_universe.py` — KIND+nasdaqtrader 전종목 검색 인덱스. 워런트·권리증서·SPAC 유닛·우선주·채권 제외(약 1,546건). **MLP 의 `Common Units` 와 ADR 은 정상 지분이라 유지**. KR 섹터는 여기서 채우지 않고 `기타` 로 두고 `enrich_meta` 가 GICS 로 채운다.
   - `enrich_meta.py` — **KR/US** 시총·섹터 보강(`--market`). 주식은 `marketCap`+GICS 매핑, ETF 는 `totalAssets`+`category`. **거래대금 상위 2000종목만**(`--top`) 채운다 — 아래 "시총·섹터를 전종목에 채우지 않는 이유" 참고.

@@ -9,10 +9,13 @@ concurrency:
   group: quarterly-13f
   cancel-in-progress: false
 
+permissions:
+  contents: write # cusip_map.csv / cusip_unmapped.txt 갱신 커밋
+
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,11 +24,43 @@ jobs:
           cache: pip
       - run: pip install -r pipeline/requirements.txt
 
+      # 13F 분기 홀딩 원본 캐시(~150MB). 없으면 100펀드 × 40분기를 통째로 재수집하게 되고
+      # 그건 SEC 요청 4천 건이라 타임아웃 난다. 키에 분기를 넣어 매 실행 새로 저장한다.
+      - name: Restore 13F cache
+        uses: actions/cache@v4
+        with:
+          path: pipeline/.cache/13f
+          key: 13f-cache-${{ github.run_id }}
+          restore-keys: 13f-cache-
+
       - name: Fetch 13F
         env:
           HP_DATA_DIR: ${{ github.workspace }}/data
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: python -m pipeline.quarterly.fetch_13f
+
+      # 새로 등장한 CUSIP 만 조회한다(cusip_map.csv·cusip_unmapped.txt 가 저장소에 있으므로).
+      # OPENFIGI_API_KEY 가 있으면 요청당 100건으로 훨씬 빠르다.
+      - name: Map new CUSIPs
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+          OPENFIGI_API_KEY: ${{ secrets.OPENFIGI_API_KEY }}
+        run: python -m pipeline.quarterly.map_cusips
+
+      # 성과 계산에 US 수정주가가 필요하다 — daily-us 가 올려둔 것을 받아 쓴다.
+      - name: Pull US prices
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m pipeline.daily.sync_down --prefix ohlcv/US
+
+      - name: Build fund stats
+        env:
+          HP_DATA_DIR: ${{ github.workspace }}/data
+        run: python -m pipeline.quarterly.build_fund_stats
 
       - name: Upload to R2
         env:
@@ -35,3 +70,12 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m pipeline.daily.upload_r2 --prefix funds
+
+      # 매핑 결과를 되커밋해야 다음 분기에 같은 CUSIP 을 다시 조회하지 않는다.
+      - name: Commit CUSIP map
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pipeline/config/cusip_map.csv pipeline/config/cusip_unmapped.txt
+          git diff --staged --quiet || git commit -m "chore: CUSIP 매핑 갱신 (quarterly-13f)"
+          git push

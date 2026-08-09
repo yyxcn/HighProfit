@@ -12,7 +12,7 @@
 | `/heatmap` | `app/heatmap/page.tsx` | TV 위젯 / sectors JSON | `?m=&p=` 계약 |
 | `/seasonality` | `app/seasonality/page.tsx` | parquet → core | |
 | `/backtest` | `app/backtest/page.tsx` | parquet → core | |
-| `/funds` | `app/funds/page.tsx` | funds JSON | |
+| `/funds` | `app/funds/page.tsx` | funds JSON | `?tab=overview\|watch\|detail\|popular` |
 
 ## 셸
 

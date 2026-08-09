@@ -86,6 +86,9 @@ export default function SeasonalityPage() {
   };
 
   const ready = sec && status === "ok" && points.length > 0;
+  // 종목이 바뀌면 차트를 새로 마운트해 인트로 애니메이션을 다시 재생한다.
+  // (캐시된 종목은 로딩 프레임 없이 바로 그려져서 마운트만으론 트리거가 안 걸림)
+  const introKey = sec ? `${sec.m}:${sec.t}` : "";
 
   return (
     <div className="p-4 md:p-6 space-y-5">
@@ -186,7 +189,7 @@ export default function SeasonalityPage() {
                 </div>
               </div>
               <div className="h-[360px]">
-                <SeasonalityChart points={points} actual={actual} />
+                <SeasonalityChart key={introKey} points={points} actual={actual} />
               </div>
             </div>
 
@@ -197,7 +200,7 @@ export default function SeasonalityPage() {
                   <h3 className="text-small font-medium text-fg-dim">패턴 신뢰도</h3>
                   <ShieldCheck size={16} className="text-accent" />
                 </div>
-                <ReliabilityGauge significant={significant} />
+                <ReliabilityGauge key={introKey} significant={significant} />
               </div>
 
               <div className="panel p-5 flex-1">
@@ -232,7 +235,7 @@ export default function SeasonalityPage() {
                     월별 평균 <span className="text-fg-mute/70">(회색 = |t|&lt;2, 약함)</span>
                   </div>
                   <div className="h-28">
-                    <MonthlyBars data={monthly} />
+                    <MonthlyBars key={introKey} data={monthly} />
                   </div>
                 </div>
               </div>

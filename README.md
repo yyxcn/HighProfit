@@ -196,6 +196,29 @@ npm run build -w @highprofit/core             # tsc --noEmit 타입체크만
 
 ---
 
+## Trigger Keywords
+
+Claude Code 슬래시 커맨드. 정의는 [`.claude/commands/`](.claude/commands/) 에 있고, 각 파일이
+실행 순서·소요 시간·하지 말아야 할 것까지 담고 있다. 채팅에 키워드만 치면 된다.
+
+| 키워드 | 하는 일 | 소요 |
+|---|---|---|
+| `/data` | 시세 갱신 — 종목 인덱스 → KR/US OHLCV → 시총·섹터 → 유니버스·섹터 집계 → 고아 parquet 정리 | 증분 수 분 (US 전량은 4시간) |
+| `/funds` | 13F 펀드 갱신 — 신고 수집 → CUSIP→티커 매핑 → 성과·인기주식 집계 | 분기 갱신 ~5분 |
+
+```
+/data          # 전체 (기본)
+/data kr       # 한국만
+/data --full   # 전량 재수집 (월 1회 정합성 점검)
+
+/funds         # 13F 마감(2/14·5/15·8/14·11/14) 며칠 뒤 실행
+```
+
+둘 다 **로컬 `apps/web/public/data` 에만 쓰고 R2 업로드는 하지 않는다** — 배포는 GitHub Actions 담당이다.
+`/funds` 는 `fetch → map → build` **순서를 지켜야** 한다(매핑 전에 집계하면 커버리지 부족으로 펀드가 랭킹에서 빠진다).
+
+---
+
 ## 문서
 
 | 문서 | 내용 |

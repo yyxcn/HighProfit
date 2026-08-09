@@ -4,12 +4,15 @@ import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Refere
 import type { MonthlyPoint } from "@highprofit/core";
 import { pct } from "@/lib/format";
 import { useChartColors } from "@/lib/theme";
+import { useIntroAnimation } from "@/lib/useIntroAnimation";
 
 const MONTHS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 /** 월별 평균수익률. |tStat|<2 는 회색(노이즈) — 정직성 요구사항(명세 6-3). */
 export function MonthlyBars({ data }: { data: MonthlyPoint[] }) {
   const cc = useChartColors();
+  // 첫 마운트에서만 0 → 값으로 자라는 인트로
+  const intro = useIntroAnimation(900);
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 8, right: 12, bottom: 4, left: 4 }}>
@@ -17,7 +20,13 @@ export function MonthlyBars({ data }: { data: MonthlyPoint[] }) {
         <YAxis tickFormatter={(v) => pct(v, 0, false)} tick={{ fill: cc.axisText, fontSize: 11 }} stroke={cc.axis} width={44} />
         <ReferenceLine y={0} stroke={cc.zero} />
         <Tooltip content={<MonthTooltip />} cursor={{ fill: cc.grid, opacity: 0.4 }} />
-        <Bar dataKey="avg" isAnimationActive={false} radius={[2, 2, 0, 0]}>
+        <Bar
+          dataKey="avg"
+          isAnimationActive={intro}
+          animationDuration={700}
+          animationEasing="ease-out"
+          radius={[2, 2, 0, 0]}
+        >
           {data.map((d, i) => {
             const significant = Math.abs(d.tStat) >= 2;
             const color = !significant ? "#6b7280" : d.avg >= 0 ? cc.up : cc.down;

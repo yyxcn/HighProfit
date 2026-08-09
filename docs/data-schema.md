@@ -10,7 +10,9 @@ ohlcv/KR/005930.parquet       종목당 1파일 (snappy)
 ohlcv/US/AAPL.parquet
 sectors/KR.json / US.json / ETF.json   히트맵 사전집계
 funds/index.json              펀드 목록
-funds/{CIK}_{YYYYQn}.json      펀드 보유내역
+funds/{CIK}_{YYYYQn}.json      펀드 보유내역(최신 분기만)
+funds/performance.json        펀드별 추정 성과 랭킹 (Overview 탭)
+funds/popular.json            분기별 인기 보유/신규 매수/청산 (인기 주식 탭)
 ```
 
 ## OHLCV parquet (명세 5-3)
@@ -43,8 +45,23 @@ funds/{CIK}_{YYYYQn}.json      펀드 보유내역
 
 ## funds — 13F (명세 6-5)
 
-`index.json`: `{ asOf, funds:[{ cik, name, latest, file, aum, positions, filedAt }] }`
+`index.json`: `{ asOf, funds:[{ cik, name, manager, category, latest, file, aum, positions, filedAt, inception, quarters }] }`
 보유 파일: `{ cik, name, quarter, filedAt, aum, positions:[ { cusip, ticker|null, name, value, shares, weight, change, deltaShares } ] }`
-`change` = `new|add|reduce|exit|hold`.
+`change` = `new|add|reduce|exit|hold`. 보유 파일은 **최신 분기만** 배포한다 — 과거 분기 원본은
+`pipeline/.cache/13f/` 에만 있고 아래 두 집계 파일의 입력으로만 쓰인다.
+
+`performance.json`: `{ asOf, funds:[{ cik, name, manager, category, inception, inceptionDate,
+quarters, aum, positions, ret1y, cagr3y, cagr5y, cagrInception, totalReturn, coverage,
+reliability, curve:[[date, index]] }] }`
+- 공시일 기준 분기 리밸런싱을 가정한 **추정** 롱온리 성과. 실제 펀드 수익률이 아니다.
+- `coverage` = 티커 매핑된 보유분의 가치 비중, `reliability` = `high|mid|low` (UI 는 mid/low 만 표시).
+- `curve` 는 월말 샘플, 시작값 1.0.
+
+`popular.json`: `{ asOf, topN, broadThreshold, quarters:[{ quarter, filed, total,
+all:{hold,new,exit}, focused:{hold,new,exit} }] }`
+- 각 목록은 `[{ cusip, ticker|null, name, managers, value, top:[매니저 3] }]`, 매니저 수 → 총 가치 순.
+- `focused` 는 한 분기에 `broadThreshold`(500) 종목 이상 보유한 **인덱스성 펀드를 뺀** 집계.
+  퀀트·대형 운용사가 수천 종목을 들어 카운트를 지배하는 것을 막는다.
+- `exit` 의 `value` 는 이번 분기가 0 이므로 **직전 분기 평가액**이다.
 
 타입 정의: `packages/core/src/types.ts`, `apps/web/lib/data.ts`(펀드).

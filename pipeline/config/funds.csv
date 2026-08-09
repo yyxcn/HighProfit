@@ -1,42 +1,101 @@
-name,cik
-BERKSHIRE HATHAWAY INC,0001067983
-"Bridgewater Associates, LP",0001350694
-RENAISSANCE TECHNOLOGIES LLC,0001037389
-"Scion Asset Management, LLC",0001649339
-"Pershing Square Capital Management, L.P.",0001336528
-TIGER GLOBAL MANAGEMENT LLC,0001167483
-Appaloosa LP,0001656456
-Duquesne Family Office LLC,0001536411
-Third Point LLC,0001040273
-GREENLIGHT CAPITAL INC,0001079114
-BAUPOST GROUP LLC/MA,0001061768
-LONE PINE CAPITAL LLC,0001061165
-COATUE MANAGEMENT LLC,0001135730
-VIKING GLOBAL INVESTORS LP,0001103804
-"TWO SIGMA INVESTMENTS, LP",0001179392
-CITADEL ADVISORS LLC,0001423053
-MILLENNIUM MANAGEMENT LLC,0001273087
-AQR CAPITAL MANAGEMENT LLC,0001167557
-"Point72 Asset Management, L.P.",0001603466
-SOROS FUND MANAGEMENT LLC,0001029160
-ICAHN CARL C,0000921669
-Himalaya Capital Management LLC,0001709323
-GATES FOUNDATION TRUST,0001166559
-"First Eagle Investment Management, LLC",0001325447
-"BRANDES INVESTMENT PARTNERS, LP",0001015079
-Sachem Head Capital Management LP,0001582090
-"D. E. Shaw & Co., Inc.",0001009207
-Elliott Investment Management L.P.,0001791786
-FAIRHOLME CAPITAL MANAGEMENT LLC,0001056831
-"Altimeter Capital Management, LP",0001541617
-AKRE CAPITAL MANAGEMENT LLC,0001112520
-DODGE & COX,0000200217
-WELLINGTON MANAGEMENT GROUP LLP,0000902219
-POLEN CAPITAL MANAGEMENT LLC,0001034524
-Egerton Capital (UK) LLP,0001581811
-Whale Rock Capital Management LLC,0001387322
-Melvin Capital Management LP,0001628110
-"ValueAct Holdings, L.P.",0001418814
-"TRIAN FUND MANAGEMENT, L.P.",0001345471
-"MANGROVE PARTNERS IM, LLC",0001535392
-"GLENVIEW CAPITAL MANAGEMENT, LLC",0001138995
+name,cik,manager,category
+"ARIEL INVESTMENTS, LLC",0000936753,John Rogers,가치투자
+BERKSHIRE HATHAWAY INC,0001067983,Warren Buffett,가치투자
+"BRANDES INVESTMENT PARTNERS, LP",0001015079,Charles Brandes,가치투자
+Baupost Group,0001061768,Seth Klarman,가치투자
+DAVIS SELECTED ADVISERS,0001036325,Chris Davis,가치투자
+DODGE & COX,0000200217,,가치투자
+FAIRHOLME CAPITAL MANAGEMENT LLC,0001056831,Bruce Berkowitz,가치투자
+"First Eagle Investment Management, LLC",0001325447,Matthew McLennan,가치투자
+"GAMCO INVESTORS, INC. ET AL",0000807249,Mario Gabelli,가치투자
+HARRIS ASSOCIATES L P,0000813917,Bill Nygren,가치투자
+HOTCHKIS & WILEY CAPITAL MANAGEMENT LLC,0001164833,,가치투자
+Himalaya Capital Management LLC,0001709323,Li Lu,가치투자
+MARKEL GROUP INC.,0001096343,Tom Gayner,가치투자
+Pzena Investment Management,0001027796,Richard Pzena,가치투자
+SOUTHEASTERN ASSET MANAGEMENT INC/TN/,0000807985,Mason Hawkins,가치투자
+"Tweedy, Browne Co LLC",0000732905,,가치투자
+"WEITZ INVESTMENT MANAGEMENT, INC.",0000883965,Wallace Weitz,가치투자
+YACKTMAN ASSET MANAGEMENT LP,0000905567,Donald Yacktman,가치투자
+AKRE CAPITAL MANAGEMENT LLC,0001112520,Chuck Akre,그로스
+ARK Investment Management LLC,0001697748,Cathie Wood,그로스
+"Altimeter Capital Management, LP",0001541617,Brad Gerstner,그로스
+Baillie Gifford,0001088875,,그로스
+COATUE MANAGEMENT LLC,0001135730,Philippe Laffont,그로스
+D1 Capital Partners L.P.,0001747057,Daniel Sundheim,그로스
+"Dragoneer Investment Group, LLC",0001602189,Marc Stad,그로스
+Durable Capital Partners LP,0001798849,Henry Ellenbogen,그로스
+Fundsmith,0001569205,Terry Smith,그로스
+"HHLR ADVISORS, LTD.",0001762304,Zhang Lei,그로스
+"LIGHT STREET CAPITAL MANAGEMENT, LLC",0001569049,Glen Kacher,그로스
+LONE PINE CAPITAL LLC,0001061165,Stephen Mandel,그로스
+POLEN CAPITAL MANAGEMENT LLC,0001034524,Dan Davidowitz,그로스
+"SANDS CAPITAL MANAGEMENT, LLC",0001020066,,그로스
+"SRS Investment Management, LLC",0001503174,Karthik Sarma,그로스
+TIGER GLOBAL MANAGEMENT LLC,0001167483,Chase Coleman,그로스
+VIKING GLOBAL INVESTORS LP,0001103804,Andreas Halvorsen,그로스
+Whale Rock Capital Management LLC,0001387322,Alex Sacerdote,그로스
+Capital Research Global Investors,0001422848,,기관
+GATES FOUNDATION TRUST,0001166559,Bill Gates,기관
+HARVARD MANAGEMENT CO INC,0001082621,,기관
+NORGES BANK,0001374170,,기관
+"ADAGE CAPITAL PARTNERS GP, L.L.C.",0001165408,Phill Gross,롱숏
+"DEERFIELD MANAGEMENT COMPANY, L.P.",0001009258,James Flynn,롱숏
+"EMINENCE CAPITAL, LP",0001107310,Ricky Sandler,롱숏
+Egerton Capital,0001581811,John Armitage,롱숏
+"FARALLON CAPITAL MANAGEMENT, L.L.C.",0000909661,Andrew Spokes,롱숏
+"GLENVIEW CAPITAL MANAGEMENT, LLC",0001138995,Larry Robbins,롱숏
+KENSICO CAPITAL MANAGEMENT CORP,0001113000,,롱숏
+Maverick Capital,0000934639,Lee Ainslie,롱숏
+"RA CAPITAL MANAGEMENT, L.P.",0001346824,Peter Kolchinsky,롱숏
+"Redmile Group, LLC",0001425738,Jeremy Green,롱숏
+Select Equity Group,0001592643,,롱숏
+"Senvest Management, LLC",0001328785,Richard Mashaal,롱숏
+Brevan Howard,0001512857,,매크로
+"Bridgewater Associates, LP",0001350694,Ray Dalio,매크로
+Caxton Associates,0002051323,Andrew Law,매크로
+"DISCOVERY CAPITAL MANAGEMENT, LLC / CT",0001389507,Rob Citrone,매크로
+Duquesne Family Office LLC,0001536411,Stanley Druckenmiller,매크로
+Moore Capital Management,0001448574,Louis Bacon,매크로
+SOROS FUND MANAGEMENT LLC,0001029160,George Soros,매크로
+TUDOR INVESTMENT CORP ET AL,0000923093,Paul Tudor Jones,매크로
+"Alyeska Investment Group, L.P.",0001453072,Anand Parekh,멀티전략
+CITADEL ADVISORS LLC,0001423053,Ken Griffin,멀티전략
+"ExodusPoint Capital Management, LP",0001736225,Michael Gelband,멀티전략
+"Holocene Advisors, LP",0001700574,Brandon Haley,멀티전략
+Hudson Bay Capital Management LP,0001393825,Sander Gerber,멀티전략
+MILLENNIUM MANAGEMENT LLC,0001273087,Israel Englander,멀티전략
+"Point72 Asset Management, L.P.",0001603466,Steven Cohen,멀티전략
+Schonfeld Strategic Advisors LLC,0001665241,Steven Schonfeld,멀티전략
+Verition Fund Management LLC,0001454027,Nicholas Maounis,멀티전략
+Corvex Management LP,0001535472,Keith Meister,액티비스트
+Elliott Investment Management L.P.,0001791786,Paul Singer,액티비스트
+Engaged Capital LLC,0001559771,Glenn Welling,액티비스트
+"HG Vora Capital Management, LLC",0001525362,Parag Vora,액티비스트
+ICAHN CARL C,0000921669,Carl Icahn,액티비스트
+Impactive Capital LP,0001786767,Lauren Taylor Wolfe,액티비스트
+JANA Partners,0001998597,Barry Rosenstein,액티비스트
+"Pershing Square Capital Management, L.P.",0001336528,Bill Ackman,액티비스트
+Politan Capital Management LP,0001885245,Quentin Koffey,액티비스트
+Sachem Head Capital Management LP,0001582090,Scott Ferguson,액티비스트
+Starboard Value LP,0001517137,Jeff Smith,액티비스트
+Third Point LLC,0001040273,Daniel Loeb,액티비스트
+Trian Fund Management,0001345471,Nelson Peltz,액티비스트
+"ValueAct Holdings, L.P.",0001418814,Mason Morfit,액티비스트
+ACADIAN ASSET MANAGEMENT LLC,0000916542,,퀀트
+AQR CAPITAL MANAGEMENT LLC,0001167557,Cliff Asness,퀀트
+"ARROWSTREET CAPITAL, LIMITED PARTNERSHIP",0001164508,,퀀트
+D. E. Shaw,0001009207,David Shaw,퀀트
+Marshall Wace,0001318757,Paul Marshall,퀀트
+"PDT Partners, LLC",0001564702,Peter Muller,퀀트
+RENAISSANCE TECHNOLOGIES LLC,0001037389,Jim Simons,퀀트
+Susquehanna International Group,0001446194,Jeff Yass,퀀트
+"TWO SIGMA INVESTMENTS, LP",0001179392,David Siegel,퀀트
+"Anchorage Capital Group, L.L.C.",0001300714,Kevin Ulrich,크레딧/디스트레스
+Appaloosa,0001656456,David Tepper,크레딧/디스트레스
+Canyon Capital Advisors,0001074034,Josh Friedman,크레딧/디스트레스
+"Knighthead Capital Management, LLC",0001512397,Tom Wagner,크레딧/디스트레스
+"MANGROVE PARTNERS IM, LLC",0001535392,Nathaniel August,크레딧/디스트레스
+OAKTREE CAPITAL MANAGEMENT LP,0000949509,Howard Marks,크레딧/디스트레스
+"Owl Creek Asset Management, L.P.",0001313756,Jeffrey Altman,크레딧/디스트레스
+Silver Point Capital,0001332784,Edward Mule,크레딧/디스트레스

@@ -14,6 +14,7 @@ import {
 import type { SeasonalPoint } from "@highprofit/core";
 import { pct, mmddKo } from "@/lib/format";
 import { useChartColors } from "@/lib/theme";
+import { useIntroAnimation } from "@/lib/useIntroAnimation";
 
 const MONTH_TICKS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
 const MONTHS = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
@@ -42,6 +43,8 @@ export function SeasonalityChart({
   actual?: Map<string, number> | null;
 }) {
   const cc = useChartColors();
+  // 첫 마운트에서만 좌→우로 그려지는 인트로 (Area 1.1s + 올해 경로 0.25s 지연 1.0s)
+  const intro = useIntroAnimation(1400);
   const data: Row[] = points.map((p) => ({
     ...p,
     doy: mmddToDoy(p.mmdd),
@@ -87,7 +90,9 @@ export function SeasonalityChart({
           stroke={cc.line}
           strokeWidth={1.5}
           fill="url(#compFill)"
-          isAnimationActive={false}
+          isAnimationActive={intro}
+          animationDuration={1100}
+          animationEasing="ease-out"
           dot={false}
         />
         {actual && (
@@ -98,7 +103,10 @@ export function SeasonalityChart({
             strokeWidth={1.25}
             strokeOpacity={0.75}
             dot={false}
-            isAnimationActive={false}
+            isAnimationActive={intro}
+            animationBegin={250}
+            animationDuration={1000}
+            animationEasing="ease-out"
             connectNulls
           />
         )}

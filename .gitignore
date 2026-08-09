@@ -9,6 +9,7 @@ next-env.d.ts
 
 # python
 pipeline/.venv/
+pipeline/.cache/
 __pycache__/
 *.pyc
 

@@ -25,6 +25,13 @@ interface Cell {
   m?: Market; // 종목일 때만
 }
 
+/** 타일에 실제로 그릴 문구 — 폭에 맞춰 미리 잘라 둔 것. null 이면 그리지 않는다. */
+interface Drawn extends Cell, Box {
+  title: { text: string; fs: number } | null;
+  code: string | null; // KR 종목 코드 (넉넉한 타일에서만)
+  retText: string | null;
+}
+
 export function Treemap({
   file,
   period,
@@ -56,8 +63,14 @@ export function Treemap({
   // 드릴 상태가 바뀌면 남아 있던 툴팁을 지운다.
   useEffect(() => setTip(null), [sector]);
 
+  // 웹폰트가 붙기 전 잰 글자 폭은 폴백 폰트 기준이라 어긋난다 → 로드되면 한 번 다시 맞춘다.
+  const [fontsReady, setFontsReady] = useState(false);
+  useEffect(() => {
+    document.fonts?.ready.then(() => setFontsReady(true));
+  }, []);
+
   const cells = useMemo(() => {
-    if (size.w < 10 || size.h < 10) return [] as (Cell & Box)[];
+    if (size.w < 10 || size.h < 10) return [] as Drawn[];
 
     const children: TN[] =
       sector === null
@@ -86,18 +99,48 @@ export function Treemap({
 
     return layout(root)
       .leaves()
-      .map((l) => ({
-        key: l.data.name,
-        label: l.data.label ?? l.data.name,
-        m: l.data.m,
-        cap: l.data.cap ?? 0,
-        ret: l.data.ret ?? 0,
-        x0: l.x0,
-        y0: l.y0,
-        x1: l.x1,
-        y1: l.y1,
-      }));
-  }, [file, period, scope, sector, size]);
+      .map((l): Drawn => {
+        const w = l.x1 - l.x0;
+        const h = l.y1 - l.y0;
+        const label = l.data.label ?? l.data.name;
+        const ret = l.data.ret ?? 0;
+        // KR 은 티커가 숫자 코드라 읽어도 모른다 → 종목명을 주 라벨로.
+        const isKr = sector !== null && l.data.m === "KR";
+        const primary = sector === null || isKr ? label : l.data.name;
+        const baseFs = sector === null ? Math.max(10, Math.min(15, w / 9)) : 11;
+
+        let title = h > 20 ? fitText(primary, w - 8, baseFs, sector === null ? 10 : 9) : null;
+        // 종목명이 두 글자도 안 들어가면 짧은 코드라도 보여준다.
+        if (!title && isKr && h > 20) title = fitText(l.data.name, w - 8, 10, 9);
+
+        const retText = pct(ret);
+        const showRet = !!title && h > 34 && measure(retText, 10, 500, true) <= w - 6;
+        // 넉넉한 타일이면 종목명 위에 코드도 함께 (검색·주문할 때 필요).
+        const showCode =
+          isKr &&
+          showRet &&
+          h > 48 &&
+          title!.text !== l.data.name &&
+          measure(l.data.name, 9, 500, true) <= w - 6;
+
+        return {
+          key: l.data.name,
+          label,
+          m: l.data.m,
+          cap: l.data.cap ?? 0,
+          ret,
+          x0: l.x0,
+          y0: l.y0,
+          x1: l.x1,
+          y1: l.y1,
+          title,
+          code: showCode ? l.data.name : null,
+          retText: showRet ? retText : null,
+        };
+      });
+    // fontsReady 는 값을 쓰진 않지만, 웹폰트가 붙은 뒤 글자 폭을 다시 재려면 필요한 의존성이다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file, period, scope, sector, size, fontsReady]);
 
   const isSectorLevel = sector === null;
 
@@ -107,10 +150,7 @@ export function Treemap({
         {cells.map((c, i) => {
           const w = c.x1 - c.x0;
           const h = c.y1 - c.y0;
-          // 섹터명은 티커보다 길어서 더 넓어야 읽을 만하다.
-          const showText = w > (isSectorLevel ? 56 : 34) && h > 20;
-          const showRet = showText && h > 34;
-          const fs = isSectorLevel ? Math.max(10, Math.min(15, w / 9)) : 11;
+          const cy = c.y0 + h / 2;
           return (
             <g
               key={c.key + i}
@@ -131,23 +171,37 @@ export function Treemap({
                 stroke={cc.tileStroke}
                 strokeWidth={0.5}
               />
-              {showText && (
+              {c.code && (
                 <text
                   x={c.x0 + w / 2}
-                  y={c.y0 + h / 2 - (showRet ? 5 : -3)}
+                  y={cy - 15}
                   textAnchor="middle"
-                  fontSize={fs}
+                  fontSize={9}
+                  className="num"
+                  fill="#fff"
+                  fillOpacity={0.7}
+                  style={{ pointerEvents: "none" }}
+                >
+                  {c.code}
+                </text>
+              )}
+              {c.title && (
+                <text
+                  x={c.x0 + w / 2}
+                  y={c.code ? cy - 1 : cy - (c.retText ? 5 : -3)}
+                  textAnchor="middle"
+                  fontSize={c.title.fs}
                   fontWeight={700}
                   fill="#fff"
                   style={{ pointerEvents: "none" }}
                 >
-                  {isSectorLevel ? c.label : c.key}
+                  {c.title.text}
                 </text>
               )}
-              {showRet && (
+              {c.retText && (
                 <text
                   x={c.x0 + w / 2}
-                  y={c.y0 + h / 2 + 10}
+                  y={c.code ? cy + 13 : cy + 10}
                   textAnchor="middle"
                   fontSize={10}
                   className="num"
@@ -155,7 +209,7 @@ export function Treemap({
                   fillOpacity={0.85}
                   style={{ pointerEvents: "none" }}
                 >
-                  {pct(c.ret)}
+                  {c.retText}
                 </text>
               )}
             </g>
@@ -192,6 +246,53 @@ export function Treemap({
       )}
     </div>
   );
+}
+
+/**
+ * SVG `<text>` 는 CSS 말줄임이 없어서 글자 폭을 직접 재야 타일 밖으로 안 넘친다.
+ * 캔버스 컨텍스트 하나를 모듈 전역에 재사용하고, 폰트 스택은 실제 DOM 에서 읽어 온다
+ * (하드코딩하면 폴백 폰트로 재서 어긋난다).
+ */
+let measureCtx: CanvasRenderingContext2D | null | undefined;
+let sansFont = "";
+let monoFont = "";
+
+function measure(text: string, fs: number, weight: number, mono = false): number {
+  if (measureCtx === undefined) measureCtx = document.createElement("canvas").getContext("2d");
+  if (!measureCtx) return text.length * fs * 0.6; // 캔버스를 못 쓰면 대략치로
+  if (!sansFont) {
+    sansFont = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
+    monoFont =
+      getComputedStyle(document.documentElement).getPropertyValue("--font-mono").trim() ||
+      "ui-monospace, monospace";
+  }
+  measureCtx.font = `${weight} ${fs}px ${mono ? monoFont : sansFont}`;
+  return measureCtx.measureText(text).width;
+}
+
+/**
+ * `maxW` 안에 들어가는 (문구, 폰트크기) 를 찾는다.
+ * 먼저 폰트를 `minFs` 까지 줄여 통째로 맞춰 보고, 그래도 넘치면 … 로 자른다.
+ * 두 글자도 못 넣으면 null — 호출부가 더 짧은 대안으로 폴백하거나 문구를 뺀다.
+ */
+function fitText(
+  text: string,
+  maxW: number,
+  fs: number,
+  minFs: number,
+  weight = 700,
+  mono = false,
+): { text: string; fs: number } | null {
+  if (maxW <= 0 || !text) return null;
+  for (let s = Math.round(fs); s >= minFs; s--) {
+    if (measure(text, s, weight, mono) <= maxW) return { text, fs: s };
+  }
+  const chars = [...text];
+  for (let n = chars.length - 1; n >= 2; n--) {
+    const cut = chars.slice(0, n).join("") + "…";
+    if (measure(cut, minFs, weight, mono) <= maxW) return { text: cut, fs: minFs };
+  }
+  return null;
 }
 
 interface Box {

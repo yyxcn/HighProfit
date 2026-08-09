@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 /**
  * 패턴 신뢰도 게이지. 정직성 지표(명세 6-3) 시각화:
  * 12개월 중 통계적으로 유의(|t|≥2)한 달의 비율을 점수화한다.
@@ -10,6 +12,13 @@ export function ReliabilityGauge({ significant }: { significant: number }) {
   const R = 42;
   const C = 2 * Math.PI * R;
   const offset = C * (1 - score / 100);
+
+  // 첫 프레임은 빈 호로 그린 뒤 다음 프레임에 목표값 → CSS transition 이 호를 채운다.
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDrawn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const { tier, tone } =
     significant >= 8
@@ -34,8 +43,8 @@ export function ReliabilityGauge({ significant }: { significant: number }) {
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={C}
-            strokeDashoffset={offset}
-            style={{ transition: "stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1)" }}
+            strokeDashoffset={drawn ? offset : C}
+            className="transition-[stroke-dashoffset] duration-[900ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none"
           />
         </svg>
         <div className="absolute flex flex-col items-center leading-none">
