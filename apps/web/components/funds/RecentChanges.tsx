@@ -19,7 +19,7 @@ const BADGE: Record<Exclude<HoldingChange, "hold">, { label: string; cls: string
  * 해당 펀드의 최근 분기 변동 내역 (신규/증가/감소/전량).
  * 요약 카운트 + 비중 큰 순 리스트. 도넛 아래 좌측 칸에 표시.
  */
-export function RecentChanges({ holding, limit = 8 }: { holding: FundHolding; limit?: number }) {
+export function RecentChanges({ holding, limit = 10 }: { holding: FundHolding; limit?: number }) {
   // 전체 목록은 이 좁은 칸에 펼치면 아래가 한없이 길어져 못 읽는다 → 가운데 열리는 창으로 뺀다.
   // 어느 펀드를 열었는지까지 담아 두면, 펀드를 바꿨을 때 따로 닫지 않아도 저절로 닫힌다.
   const key = `${holding.cik}_${holding.quarter}`;

@@ -34,20 +34,24 @@ export function FundSummary({
     <div className="rounded-lg border border-line bg-surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
         <div className="min-w-0">
-          <h2 className="text-fg font-semibold text-h2 truncate">{title}</h2>
-          {title !== firm && <p className="text-fg-dim text-sm truncate">{firm}</p>}
-          <p className="text-small text-fg-mute mt-0.5">
+          {/* 매니저 이름 옆에 운용사명, 그 아래 한 줄로 카테고리·설정연도 */}
+          <div className="flex flex-wrap items-baseline gap-x-3">
+            <h2 className="text-fg font-semibold text-h2">{title}</h2>
+            {title !== firm && <p className="text-fg-dim text-sm truncate">{firm}</p>}
+          </div>
+          <p className="text-small text-fg-mute mt-1">
             {category && <span>{category}</span>}
             {category && since && <span className="mx-1.5">·</span>}
             {since && <span className="num">Since {since}</span>}
           </p>
         </div>
-        <div className="num text-small text-fg-mute shrink-0">
+        <div className="num text-small text-fg-mute shrink-0 sm:mr-2">
           {holding.quarter} 기준 · {ymd(holding.filedAt)} 공시
         </div>
       </div>
 
-      <dl className="mt-4 grid grid-cols-3 gap-x-4 gap-y-3 sm:grid-cols-4 lg:grid-cols-7">
+      {/* 오른쪽에 펀드 목록이 붙어 카드 폭이 줄었다 — 7열은 아주 넓은 화면에서만. */}
+      <dl className="mt-4 grid grid-cols-3 gap-x-4 gap-y-3 sm:grid-cols-4 xl:grid-cols-7">
         <Stat label="AUM" text={`$${compact(holding.aum)}`} />
         <Stat label="보유 종목" text={`${entry?.positions ?? perf?.positions ?? "—"}개`} />
         {stats.map((s) => (

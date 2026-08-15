@@ -38,6 +38,12 @@ React/DOM 의존성 0. 순수 함수만. 모든 함수 vitest(`packages/core/__t
   같은 값이어야 사전집계 히트맵과 브라우저 계산(펀드 보유종목 히트맵)의 색이 어긋나지 않는다.
   봉이 lookback 이하면 `rangeReturn` 이 0 을 주므로, 호출부는 그 0 을 "0% 수익"으로 칠하지 말고 따로 구분한다.
 
+## marketCap.ts
+- `capBand(capEok)` — 억 KRW 시총 → `large`(≥$10B) / `mid`($2–10B) / `small` / `unknown`. 경계값은 위쪽 구간 포함.
+- `USDKRW`(1300) · `eokToUsd(capEok)` · `CAP_THRESHOLD`. **`pipeline/lib/io.py` 의 `USDKRW` 와 같은 값이어야** 한다
+  — `universe.json` 의 `c` 가 그 환율로 환산된 값이라 어긋나면 구간이 밀린다. 시총을 못 받은 종목은
+  소형주로 몰지 않고 `unknown`(분포 왜곡 방지).
+
 ## fees.ts
 - `KR_TAX`(2026-01-01 기준: 코스피/코스닥 매도 0.20%, 주식형 ETF 비과세), `DEFAULT_ROUND_TRIP_COST`, `DEFAULT_RF`, `FEE_EFFECTIVE_DATE`. 세율은 여기 한 곳에만.
 

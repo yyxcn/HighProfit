@@ -8,16 +8,21 @@ import {
   type FundIndexEntry,
   type FundHolding,
   type FundPerformance,
-  type FundPosition,
-  type HoldingChange,
 } from "@/lib/data";
 import { Donut } from "@/components/funds/Donut";
 import { HoldingsHeatmap } from "@/components/funds/HoldingsHeatmap";
+import { PositionsModal } from "@/components/funds/PositionsModal";
+import { PositionRow, PositionHead } from "@/components/funds/PositionRow";
 import { FundPicker } from "@/components/funds/FundPicker";
 import { RecentChanges } from "@/components/funds/RecentChanges";
+import { SectorMix } from "@/components/funds/SectorMix";
+import { CapMix } from "@/components/funds/CapMix";
 import { FundSummary } from "@/components/funds/FundSummary";
-import { pct, compact } from "@/lib/format";
+import { pct } from "@/lib/format";
 import { cn } from "@/lib/utils";
+
+/** 상세 화면 표에 바로 보여 줄 종목 수. 나머지는 "전체 N종목 보기" 창에서. */
+const TOP_N = 30;
 
 /** 펀드 하나의 최신 분기 보유 내역 (기존 펀드 탭 화면). */
 export function FundDetail({
@@ -54,42 +59,54 @@ export function FundDetail({
   // 펀드를 바꾸면 이전 보유내역이 잠깐 남는다 — 상태를 지우는 대신 파일 일치로 걸러낸다
   const shown = holding && `${holding.cik}_${holding.quarter}.json` === file ? holding : null;
 
+  // 전체 목록 창. 어느 펀드로 열었는지까지 담아 두면 펀드를 바꿨을 때 저절로 닫힌다.
+  const shownKey = shown ? `${shown.cik}_${shown.quarter}` : null;
+  const [allFor, setAllFor] = useState<string | null>(null);
+
   return (
     <div className="space-y-4">
-      <FundPicker
-        funds={funds}
-        value={file}
-        onSelect={onSelect}
-        leading={
-          <button
-            onClick={() => selected && onToggleWatch(selected.cik)}
-            disabled={!selected}
-            aria-pressed={!!selected && watch.has(selected.cik)}
-            title={
-              selected && watch.has(selected.cik)
-                ? "관심 펀드에서 빼기"
-                : "관심 펀드에 추가 — 관심 탭에서 모아 봅니다"
-            }
-            className="grid w-11 shrink-0 place-items-center rounded-l-lg transition-colors hover:bg-raised disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-          >
-            <Star
-              size={17}
-              className={cn(
-                "transition-colors",
-                selected && watch.has(selected.cik) ? "text-accent fill-accent" : "text-fg-mute"
-              )}
-            />
-          </button>
-        }
-      />
+      {/* 요약 카드와 검색+선택 드롭다운을 나란히. 선택 UI 는 보유내역 로딩과 무관하게 항상 둔다
+          — 불러오는 동안 사라지면 펀드를 바꿀 수가 없다. */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_400px]">
+        {shown ? (
+          <FundSummary entry={selected} perf={perf} holding={shown} />
+        ) : (
+          <div className="h-40 rounded-lg border border-line bg-surface animate-pulse" />
+        )}
+        <FundPicker
+          funds={funds}
+          value={file}
+          onSelect={onSelect}
+          leading={
+            <button
+              onClick={() => selected && onToggleWatch(selected.cik)}
+              disabled={!selected}
+              aria-pressed={!!selected && watch.has(selected.cik)}
+              title={
+                selected && watch.has(selected.cik)
+                  ? "관심 펀드에서 빼기"
+                  : "관심 펀드에 추가 — 관심 탭에서 모아 봅니다"
+              }
+              className="grid w-11 shrink-0 place-items-center rounded-l-lg transition-colors hover:bg-raised disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <Star
+                size={17}
+                className={cn(
+                  "transition-colors",
+                  selected && watch.has(selected.cik) ? "text-accent fill-accent" : "text-fg-mute"
+                )}
+              />
+            </button>
+          }
+        />
+      </div>
 
       <div className="min-w-0">
         {!shown && <div className="h-64 rounded-lg border border-line bg-surface animate-pulse" />}
         {shown && (
           <div className="space-y-4">
-            <FundSummary entry={selected} perf={perf} holding={shown} />
 
-            <div className="grid md:grid-cols-[240px_1fr] gap-4">
+            <div className="grid md:grid-cols-[290px_1fr] gap-4">
               <div className="self-start rounded-lg border border-line bg-surface p-3 space-y-3">
                 <div>
                   <div className="text-small text-fg-dim mb-1">비중 (상위 10 + 기타)</div>
@@ -100,21 +117,19 @@ export function FundDetail({
                 <div className="border-t border-line/60 pt-3">
                   <RecentChanges holding={shown} />
                 </div>
+                <div className="border-t border-line/60 pt-3">
+                  <SectorMix holding={shown} />
+                </div>
+                <div className="border-t border-line/60 pt-3">
+                  <CapMix holding={shown} />
+                </div>
               </div>
 
               <div className="rounded-lg border border-line bg-surface p-3 overflow-x-auto">
                 <table className="w-full text-small num">
-                  <thead>
-                    <tr className="text-fg-mute text-micro">
-                      <th className="text-left font-normal pb-1.5">종목</th>
-                      <th className="text-right font-normal pb-1.5">비중</th>
-                      <th className="text-right font-normal pb-1.5">평가액</th>
-                      <th className="text-right font-normal pb-1.5">주식수</th>
-                      <th className="text-right font-normal pb-1.5">변화</th>
-                    </tr>
-                  </thead>
+                  <PositionHead />
                   <tbody>
-                    {shown.positions.slice(0, 30).map((p) => (
+                    {shown.positions.slice(0, TOP_N).map((p) => (
                       <PositionRow
                         key={p.cusip}
                         p={p}
@@ -123,52 +138,41 @@ export function FundDetail({
                     ))}
                   </tbody>
                 </table>
+
+                {/* 13F 는 수천 종목짜리 펀드가 흔하다 — 몇 개를 보고 있는 건지 밝히고 전체는 창으로 */}
+                {shown.positions.length > TOP_N && (
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-line/60 pt-2">
+                    <span className="num text-micro text-fg-mute">
+                      상위 {TOP_N}종목 · 전체 {shown.positions.length}종목 중 비중{" "}
+                      {pct(
+                        shown.positions.slice(0, TOP_N).reduce((a, p) => a + p.weight, 0),
+                        1,
+                        false
+                      )}
+                    </span>
+                    <button
+                      onClick={() => setAllFor(shownKey)}
+                      className="num text-micro text-fg-dim transition-colors hover:text-accent"
+                    >
+                      전체 {shown.positions.length}종목 보기
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="rounded-lg border border-line bg-surface p-3">
               <HoldingsHeatmap holding={shown} />
             </div>
+
+            <PositionsModal
+              holding={shown}
+              open={allFor === shownKey}
+              onClose={() => setAllFor(null)}
+            />
           </div>
         )}
       </div>
     </div>
   );
-}
-
-function PositionRow({ p, onClick }: { p: FundPosition; onClick: () => void }) {
-  return (
-    <tr
-      className={cn("border-t border-line/60", p.ticker ? "cursor-pointer hover:bg-raised/40" : "")}
-      onClick={onClick}
-    >
-      <td className="py-1.5">
-        {p.ticker ? (
-          <span className="text-fg">{p.ticker}</span>
-        ) : (
-          <span className="text-fg-dim truncate">{p.name}</span>
-        )}
-      </td>
-      <td className="py-1.5 text-right text-fg">{pct(p.weight, 1, false)}</td>
-      <td className="py-1.5 text-right text-fg-dim">${compact(p.value)}</td>
-      <td className="py-1.5 text-right text-fg-mute">{compact(p.shares)}</td>
-      <td className="py-1.5 text-right">
-        <ChangeBadge change={p.change} />
-      </td>
-    </tr>
-  );
-}
-
-const BADGE: Record<HoldingChange, { label: string; cls: string } | null> = {
-  new: { label: "신규", cls: "text-up border-up/40" },
-  add: { label: "증가", cls: "text-up border-up/40" },
-  reduce: { label: "감소", cls: "text-down border-down/40" },
-  exit: { label: "전량", cls: "text-fg-mute border-line" },
-  hold: null,
-};
-
-function ChangeBadge({ change }: { change: HoldingChange }) {
-  const b = BADGE[change];
-  if (!b) return <span className="text-fg-mute">—</span>;
-  return <span className={cn("text-micro px-1.5 py-0.5 rounded border", b.cls)}>{b.label}</span>;
 }
