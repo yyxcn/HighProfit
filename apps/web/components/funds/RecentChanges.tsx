@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
-import type { FundHolding, HoldingChange } from "@/lib/data";
+import { useState } from "react";
+import { List } from "lucide-react";
+import type { FundHolding, FundPosition, HoldingChange } from "@/lib/data";
+import { Modal } from "@/components/common/Modal";
 import { pct } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -19,9 +20,11 @@ const BADGE: Record<Exclude<HoldingChange, "hold">, { label: string; cls: string
  * 요약 카운트 + 비중 큰 순 리스트. 도넛 아래 좌측 칸에 표시.
  */
 export function RecentChanges({ holding, limit = 8 }: { holding: FundHolding; limit?: number }) {
-  const [expanded, setExpanded] = useState(false);
-  // 다른 펀드 선택 시 접힌 상태로 초기화
-  useEffect(() => setExpanded(false), [holding.cik, holding.quarter]);
+  // 전체 목록은 이 좁은 칸에 펼치면 아래가 한없이 길어져 못 읽는다 → 가운데 열리는 창으로 뺀다.
+  // 어느 펀드를 열었는지까지 담아 두면, 펀드를 바꿨을 때 따로 닫지 않아도 저절로 닫힌다.
+  const key = `${holding.cik}_${holding.quarter}`;
+  const [openFor, setOpenFor] = useState<string | null>(null);
+  const open = openFor === key;
 
   const changed = holding.positions.filter((p) => p.change !== "hold");
   if (changed.length === 0) {
@@ -62,36 +65,67 @@ export function RecentChanges({ holding, limit = 8 }: { holding: FundHolding; li
         ))}
       </div>
 
-      {/* 변동 리스트 */}
-      <ul className="space-y-1">
-        {(expanded ? rows : rows.slice(0, limit)).map((p) => (
-          <li key={p.cusip} className="flex items-center gap-2 text-small">
-            <span
-              className={cn(
-                "num text-micro px-1 py-0.5 rounded border shrink-0 w-9 text-center",
-                BADGE[p.change as Exclude<HoldingChange, "hold">].cls
-              )}
-            >
-              {BADGE[p.change as Exclude<HoldingChange, "hold">].label}
-            </span>
-            <span className="min-w-0 flex-1 truncate text-fg">{p.ticker ?? p.name}</span>
-            {p.change === "exit" ? (
-              <span className="text-down/80 shrink-0">매도</span>
-            ) : (
-              <span className="num text-fg-dim shrink-0">{pct(p.weight, 1, false)}</span>
-            )}
-          </li>
-        ))}
-      </ul>
+      {/* 변동 리스트 — 여기는 상위 몇 건만, 전체는 패널에서 */}
+      <ChangeList rows={rows.slice(0, limit)} />
+
       {rows.length > limit && (
         <button
-          onClick={() => setExpanded((v) => !v)}
-          className="flex items-center gap-1 mt-2 text-micro text-fg-mute hover:text-accent transition-colors"
+          onClick={() => setOpenFor(key)}
+          className="flex items-center gap-1.5 mt-2 text-micro text-fg-mute hover:text-accent transition-colors"
         >
-          <ChevronDown size={13} className={cn("transition-transform", expanded && "rotate-180")} />
-          <span className="num">{expanded ? "접기" : `+${rows.length - limit}건 더`}</span>
+          <List size={13} />
+          <span className="num">전체 {rows.length}건 보기</span>
         </button>
       )}
+
+      <Modal
+        open={open}
+        onClose={() => setOpenFor(null)}
+        title={`${holding.name} — 최근 변동`}
+        subtitle={
+          <span className="num">
+            {holding.quarter} vs 직전 · {rows.length}건
+          </span>
+        }
+      >
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {summary.map((s) => (
+            <span
+              key={s.c}
+              className={cn("num text-micro px-1.5 py-0.5 rounded border", BADGE[s.c].cls)}
+            >
+              {BADGE[s.c].label} {s.n}
+            </span>
+          ))}
+        </div>
+        <ChangeList rows={rows} />
+      </Modal>
     </div>
+  );
+}
+
+/** 변동 한 줄씩 — 좁은 칸(상위 N)과 패널(전체)이 같은 모양을 쓴다. */
+function ChangeList({ rows }: { rows: FundPosition[] }) {
+  return (
+    <ul className="space-y-1">
+      {rows.map((p) => (
+        <li key={p.cusip} className="flex items-center gap-2 text-small">
+          <span
+            className={cn(
+              "num text-micro px-1 py-0.5 rounded border shrink-0 w-9 text-center",
+              BADGE[p.change as Exclude<HoldingChange, "hold">].cls
+            )}
+          >
+            {BADGE[p.change as Exclude<HoldingChange, "hold">].label}
+          </span>
+          <span className="min-w-0 flex-1 truncate text-fg">{p.ticker ?? p.name}</span>
+          {p.change === "exit" ? (
+            <span className="text-down/80 shrink-0">매도</span>
+          ) : (
+            <span className="num text-fg-dim shrink-0">{pct(p.weight, 1, false)}</span>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }

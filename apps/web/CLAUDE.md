@@ -55,7 +55,7 @@ apps/web/
 │   ├── heatmap/                # Treemap(D3-hierarchy), TradingViewHeatmap(임베드)
 │   ├── seasonality/            # SeasonalityChart, MonthlyBars (Recharts)
 │   ├── backtest/               # EquityChart, YearlyBars (Recharts)
-│   ├── funds/Donut.tsx         # 보유 비중 도넛
+│   ├── funds/                  # Donut(보유 비중), HoldingsHeatmap(보유종목 트리맵 — parquet 직접 로드)
 │   └── home/HeroCurve.tsx      # SVG 계절성 곡선 (stroke 애니메이션)
 ├── lib/
 │   ├── data.ts                 # ★ 유일한 fetch 게이트 (parquet→hyparquet, json, 캐시+재시도)
@@ -70,7 +70,8 @@ apps/web/
 ```
 
 핵심 흐름: 검색(⌘K)→`router.push('/chart?m=&t=')`→페이지가 `lib/data.ts`로 fetch→`@highprofit/core` 계산→차트.
-차트/히트맵은 "실시간(TV)↔기본" 토글. KRX 는 TV 임베드가 불가해서 **차트는 KR 이면 기본 모드로 자동 전환**
+차트/히트맵은 "기본↔실시간(TV)" 토글. **차트는 기본(우리 일봉)이 디폴트**이고, KRX 는 TV 임베드가 불가해서
+**KR 종목으로 이동하면 TV 였더라도 기본 모드로 되돌린다**
 (`chart/page.tsx`). 히트맵은 그 분기가 없어 항상 TV 가 기본이고, TV 소스가 전부 미국이라 한국은 직접 "기본"으로 바꿔야 한다.
 세부: `../docs/frontend-architecture.md`, 스키마 `../docs/data-schema.md`.
 

@@ -66,3 +66,16 @@ export function rangeReturn(bars: Bar[], lookback: number): number {
   const start = bars[bars.length - 1 - lookback]!.close;
   return start > 0 ? end / start - 1 : 0;
 }
+
+/**
+ * 기간 → 되돌아볼 거래일 수. 파이프라인(`daily/build_sectors.py` 의 `PERIODS`)과 **같은 값**이어야
+ * 사전집계 히트맵과 브라우저에서 계산한 히트맵의 색이 어긋나지 않는다.
+ */
+export const PERIOD_LOOKBACK: Record<Period, number> = {
+  '1d': 1,
+  '5d': 5,
+  '1m': 21,
+  '3m': 63,
+  '6m': 126,
+  '1y': 252,
+};

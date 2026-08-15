@@ -123,7 +123,7 @@ function FundsInner() {
   return (
     <div className="p-4 md:p-6 space-y-4">
       <div>
-        <h1 className="font-display text-h1 text-fg">Guru Funds</h1>
+        <h1 className="font-display text-h1 text-fg">Funds</h1>
         <p className="text-small text-fg-dim mt-0.5">
           13F 보고 헤지펀드 long equity 포지션 기반 추정 성과
         </p>

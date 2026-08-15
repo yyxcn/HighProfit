@@ -19,7 +19,7 @@ const PRESET_LABEL: Record<Preset, string> = {
   "1M": "1개월", "3M": "3개월", "6M": "6개월", "1Y": "1년", "3Y": "3년", "5Y": "5년", ALL: "전체",
 };
 
-type Mode = "tv" | "basic";
+type Mode = "basic" | "tv";
 
 export default function ChartPage() {
   return (
@@ -40,7 +40,7 @@ function ChartView() {
   const { items } = useUniverse();
   const meta = items.find((it) => it.m === market && it.t === ticker);
 
-  const [mode, setMode] = useState<Mode>("tv");
+  const [mode, setMode] = useState<Mode>("basic");
   const [bars, setBars] = useState<Bar[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [preset, setPreset] = useState<Preset>("1Y");
@@ -51,10 +51,10 @@ function ChartView() {
     kvGet<SmaLine[]>("chart.sma", DEFAULT_SMA).then(setSma);
   }, []);
 
-  // 시장별 기본 모드: KRX 는 TV 무료 임베드가 라이선스로 막혀 있어 우리 데이터(기본),
-  // 미국은 TV 임베드가 되므로 실시간(TV). (사용자가 토글로 바꿀 수 있음)
+  // 기본 모드(우리 일봉)가 디폴트. KRX 는 TV 무료 임베드가 라이선스로 막혀 있어
+  // 한국 종목으로 이동하면 TV 모드였더라도 기본으로 되돌린다. (미국은 사용자 선택 유지)
   useEffect(() => {
-    setMode(market === "KR" ? "basic" : "tv");
+    if (market === "KR") setMode("basic");
   }, [market]);
 
   // 기본 모드에서만 우리 일봉 로드 (TV 모드는 위젯이 자체 데이터)
@@ -85,19 +85,19 @@ function ChartView() {
           {market && <MarketBadge market={market} type={meta?.type} />}
         </div>
 
-        {/* TradingView ↔ 기본 토글 */}
+        {/* 기본 ↔ TradingView 토글 */}
         <div className="inline-flex rounded-md border border-line bg-surface/60 p-0.5">
+          <button
+            onClick={() => changeMode("basic")}
+            className={cn("text-small px-2.5 py-1 rounded transition-colors", mode === "basic" ? "bg-raised text-fg" : "text-fg-dim hover:text-fg")}
+          >
+            Basic
+          </button>
           <button
             onClick={() => changeMode("tv")}
             className={cn("text-small px-2.5 py-1 rounded transition-colors", mode === "tv" ? "bg-raised text-fg" : "text-fg-dim hover:text-fg")}
           >
             TradingView
-          </button>
-          <button
-            onClick={() => changeMode("basic")}
-            className={cn("text-small px-2.5 py-1 rounded transition-colors", mode === "basic" ? "bg-raised text-fg" : "text-fg-dim hover:text-fg")}
-          >
-            기본
           </button>
         </div>
 

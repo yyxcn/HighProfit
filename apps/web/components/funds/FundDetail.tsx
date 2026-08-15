@@ -12,6 +12,7 @@ import {
   type HoldingChange,
 } from "@/lib/data";
 import { Donut } from "@/components/funds/Donut";
+import { HoldingsHeatmap } from "@/components/funds/HoldingsHeatmap";
 import { FundPicker } from "@/components/funds/FundPicker";
 import { RecentChanges } from "@/components/funds/RecentChanges";
 import { FundSummary } from "@/components/funds/FundSummary";
@@ -123,6 +124,10 @@ export function FundDetail({
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            <div className="rounded-lg border border-line bg-surface p-3">
+              <HoldingsHeatmap holding={shown} />
             </div>
           </div>
         )}

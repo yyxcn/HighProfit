@@ -108,4 +108,10 @@ yfinance 가 섹터를 못 주는 종목은 `기타` 한 덩어리로 남는다(
 휴장일이면(최신 봉이 직전과 동일) 업로드 스킵. 프로덕션은 R2 + secrets 필요.
 **현 로컬 데이터는 자동 갱신 아님(수동 스냅샷).** 매일 갱신하려면 launchd/cron 또는 Actions 필요.
 
+> **셋 다 현재 일시정지(`disabled_manually`)** — R2 를 아직 안 붙여서 secrets 가 비어 있고, 수집은
+> 성공해도 마지막 업로드에서 `Invalid endpoint: https://.r2.cloudflarestorage.com` 로 매번 실패했다
+> (16전 16패). 워크플로 파일은 그대로 두었으니 R2 시크릿 4개(`R2_ACCOUNT_ID`·`R2_ACCESS_KEY_ID`·
+> `R2_SECRET_ACCESS_KEY`·`R2_BUCKET`) 등록 후 `gh workflow enable daily-kr daily-us quarterly-13f`
+> 로 되살린다.
+
 스키마: [data-schema.md](data-schema.md)

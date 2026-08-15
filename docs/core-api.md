@@ -34,6 +34,9 @@ React/DOM 의존성 0. 순수 함수만. 모든 함수 vitest(`packages/core/__t
 - `CLAMP` — 기간별 색 클램핑(1d±3% … 1y±40%).
 - `heatColor(ret, clamp)` / `heatColorFor(ret, period)` — 5-stop 연속 보간.
 - `capWeightedReturn(items)` · `topConstituents(sector,n)` · `rangeReturn(bars,lookback)`.
+- `PERIOD_LOOKBACK` — 기간→거래일 수(1d:1 … 1y:252). 파이프라인 `daily/build_sectors.py` 의 `PERIODS` 와
+  같은 값이어야 사전집계 히트맵과 브라우저 계산(펀드 보유종목 히트맵)의 색이 어긋나지 않는다.
+  봉이 lookback 이하면 `rangeReturn` 이 0 을 주므로, 호출부는 그 0 을 "0% 수익"으로 칠하지 말고 따로 구분한다.
 
 ## fees.ts
 - `KR_TAX`(2026-01-01 기준: 코스피/코스닥 매도 0.20%, 주식형 ETF 비과세), `DEFAULT_ROUND_TRIP_COST`, `DEFAULT_RF`, `FEE_EFFECTIVE_DATE`. 세율은 여기 한 곳에만.

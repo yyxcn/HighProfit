@@ -2,13 +2,14 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CLAMP, heatColor, type Market, type Period, type SectorsFile } from "@highprofit/core";
+import type { Market, Period, SectorsFile } from "@highprofit/core";
 import { getSectors } from "@/lib/data";
 import { kvGet, kvSet } from "@/lib/db";
 import { EmptyState } from "@/components/common/EmptyState";
+import { Segment } from "@/components/common/Segment";
 import { Treemap } from "@/components/heatmap/Treemap";
 import { TradingViewHeatmap } from "@/components/heatmap/TradingViewHeatmap";
-import { pct } from "@/lib/format";
+import { HeatLegend } from "@/components/heatmap/HeatLegend";
 import { cn } from "@/lib/utils";
 import { Grid2x2 } from "lucide-react";
 
@@ -127,7 +128,7 @@ function HeatmapView() {
               </div>
             )}
             <div className="ml-auto">
-              <Legend period={period} />
+              <HeatLegend period={period} />
             </div>
           </>
         )}
@@ -162,49 +163,6 @@ function HeatmapView() {
         )}
       </div>
       )}
-    </div>
-  );
-}
-
-function Segment({
-  options,
-  value,
-  onChange,
-}: {
-  options: { key: string; label: string }[];
-  value: string;
-  onChange: (k: string) => void;
-}) {
-  return (
-    <div className="inline-flex rounded-md border border-line bg-surface p-0.5">
-      {options.map((o) => (
-        <button
-          key={o.key}
-          onClick={() => onChange(o.key)}
-          className={cn(
-            "text-small px-2.5 py-1 rounded transition-colors",
-            value === o.key ? "bg-raised text-fg" : "text-fg-dim hover:text-fg"
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function Legend({ period }: { period: Period }) {
-  const clamp = CLAMP[period];
-  const stops = [-clamp, -clamp / 2, 0, clamp / 2, clamp];
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="num text-micro text-fg-mute">{pct(-clamp, 0)}</span>
-      <div className="flex h-3 rounded overflow-hidden border border-line">
-        {stops.map((s, i) => (
-          <span key={i} className="w-5 h-full block" style={{ background: heatColor(s, clamp) }} />
-        ))}
-      </div>
-      <span className="num text-micro text-fg-mute">+{pct(clamp, 0, false)}</span>
     </div>
   );
 }
