@@ -121,6 +121,7 @@ export interface FundPerformance {
   inception: string; // 'YYYYQn'
   inceptionDate: string; // 'YYYY-MM-DD'
   latest: string; // 마지막으로 13F를 낸 분기
+  filedAt: string; // 'YYYY-MM-DD' — 그 분기를 실제로 신고한 날(분기말이 아니다)
   active: boolean; // 공시가 끊긴 펀드는 아예 랭킹에서 빠지므로 항상 true
   quarters: number;
   aum: number;

@@ -81,6 +81,30 @@ def update_meta(**fields) -> dict:
     return meta
 
 
+# ---- 13F 금액 단위 ----
+
+# 13F 보고 의무 기준. SEC 는 2023-09 부터 `value` 를 달러 단위로 내게 했지만, 그 전 관행대로
+# **천 달러 단위**로 내는 신고가 아직 섞여 있다(과거 분기는 대부분 천 단위).
+# 신고 의무 자체가 운용자산 $100M 이상이므로, 합계가 그보다 작으면 천 단위로 보고한 것이다.
+# (실측: 달러 단위 신고의 최소가 $133M, 천 단위 신고의 최대가 5.4M — 사이가 25배 벌어져 오판 여지가 없다.)
+UNIT_FLOOR_USD = 100_000_000
+
+
+def normalize_13f_units(obj: dict) -> dict:
+    """
+    천 달러 단위로 신고된 분기를 달러로 맞춘다. **캐시에는 SEC 원본을 그대로 두고 읽을 때만** 적용해
+    두 번 곱해지는 일이 없게 한다(멱등). 비중은 같은 분기 안의 비율이라 영향이 없고,
+    달라지는 것은 화면에 찍히는 AUM·평가액이다.
+    """
+    hs = obj.get("holdings") or []
+    total = sum(h["value"] for h in hs)
+    if 0 < total < UNIT_FLOOR_USD:
+        for h in hs:
+            h["value"] *= 1000
+        obj["unitScaled"] = True
+    return obj
+
+
 # ---- R2 (S3 호환) ----
 
 def r2_client():

@@ -94,7 +94,8 @@ def load_quarters(cik: str) -> list[dict]:
     out = []
     for p in sorted(CACHE13F.glob(f"{cik}_*.json")):
         try:
-            out.append(json.loads(p.read_text(encoding="utf-8")))
+            # 캐시는 SEC 원본이라 천 달러 단위로 신고된 분기가 섞여 있다 → 읽을 때 달러로 맞춘다
+            out.append(io.normalize_13f_units(json.loads(p.read_text(encoding="utf-8"))))
         except json.JSONDecodeError:
             continue
     out.sort(key=lambda q: q["quarter"])
@@ -425,6 +426,7 @@ def main() -> None:
                 "inception": qs[0]["quarter"],
                 "inceptionDate": first,
                 "latest": qs[-1]["quarter"],
+                "filedAt": qs[-1]["filedAt"],  # 그 분기를 SEC 에 실제로 낸 날 (분기말이 아니다)
                 "active": active,
                 "quarters": len(qs),
                 "aum": f.get("aum", 0),

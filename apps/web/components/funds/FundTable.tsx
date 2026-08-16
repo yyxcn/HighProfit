@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Star, ArrowUpDown, AlertTriangle } from "lucide-react";
-import type { FundPerformance, FundReliability } from "@/lib/data";
-import { pct, dirClass, compact } from "@/lib/format";
+import { Star, ArrowUpDown } from "lucide-react";
+import type { FundPerformance } from "@/lib/data";
+import { pct, dirClass, compact, ymd } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 type SortKey = "ret1y" | "cagr3y" | "cagr5y" | "cagrInception" | "aum" | "positions";
@@ -64,9 +64,9 @@ export function FundTable({
           <tr className="text-fg-mute text-micro border-b border-line">
             <th className="w-8" />
             <th className="text-left font-normal px-2 py-2.5 w-10">#</th>
-            <th className="text-left font-normal px-2 py-2.5">매니저</th>
-            <th className="text-left font-normal px-2 py-2.5 hidden md:table-cell">카테고리</th>
-            <th className="text-right font-normal px-2 py-2.5 hidden sm:table-cell">설정</th>
+            <th className="text-left font-normal px-2 py-2.5 w-[19%]">매니저</th>
+            <th className="text-left font-normal px-2 py-2.5 hidden md:table-cell w-[12%]">카테고리</th>
+            <th className="text-left font-normal px-2 py-2.5 hidden sm:table-cell w-[5%]">설정</th>
             {COLUMNS.map((c) => (
               <th key={c.key} className="text-right font-normal px-2 py-2.5">
                 <button
@@ -85,7 +85,7 @@ export function FundTable({
                 </button>
               </th>
             ))}
-            <th className="text-right font-normal px-2 py-2.5 hidden lg:table-cell">신뢰도</th>
+            <th className="text-right font-normal px-2 py-2.5 hidden lg:table-cell">공시일</th>
           </tr>
         </thead>
         <tbody>
@@ -120,21 +120,25 @@ export function FundTable({
               <td className="px-2 py-2.5 text-fg-dim hidden md:table-cell whitespace-nowrap">
                 {f.category || "—"}
               </td>
-              <td className="num px-2 py-2.5 text-right text-fg-dim hidden sm:table-cell whitespace-nowrap">
+              <td
+                className="num px-2 py-2.5 text-left text-fg-dim hidden sm:table-cell whitespace-nowrap"
+                title={
+                  f.quarters < YOUNG_QUARTERS
+                    ? `13F 이력 ${f.quarters}분기 — 2년이 안 돼 성과 표본이 얕습니다.`
+                    : undefined
+                }
+              >
                 {f.inception.slice(0, 4)}
-                {f.quarters < YOUNG_QUARTERS && (
-                  <span className="ml-1 text-micro px-1 py-0.5 rounded border border-accent-dim/60 text-accent">
-                    신생
-                  </span>
-                )}
               </td>
               {COLUMNS.map((c) => (
                 <td key={c.key} className="num px-2 py-2.5 text-right whitespace-nowrap">
                   <Ret v={f[c.key] as number | null} />
                 </td>
               ))}
-              <td className="px-2 py-2.5 text-right hidden lg:table-cell">
-                <Reliability level={f.reliability} coverage={f.coverage} />
+              <td className="num px-2 py-2.5 text-right hidden lg:table-cell whitespace-nowrap text-fg-mute">
+                <span title={`${f.latest} 보유분을 ${ymd(f.filedAt)} 에 신고했습니다. 13F 는 분기말 45일 뒤까지 신고하면 되므로 실제 보유 시점과는 차이가 있습니다.`}>
+                  {ymd(f.filedAt)}
+                </span>
               </td>
             </tr>
           ))}
@@ -158,26 +162,3 @@ function Ret({ v }: { v: number | null }) {
   return <span className={dirClass(v)}>{pct(v)}</span>;
 }
 
-const RELIABILITY: Record<FundReliability, string | null> = {
-  high: null,
-  mid: "보통",
-  low: "낮음",
-};
-
-/**
- * 신뢰도 = CUSIP→티커 매핑 커버리지(가치 기준) + 이력 길이.
- * 방향색(초록/빨강)은 손익 전용이라 여기서는 중립 톤만 쓴다.
- */
-function Reliability({ level, coverage }: { level: FundReliability; coverage: number }) {
-  const label = RELIABILITY[level];
-  if (!label) return <span className="text-fg-mute">—</span>;
-  return (
-    <span
-      title={`추정 커버리지 ${pct(coverage, 0, false)} — 티커 매핑이 안 된 보유분은 성과 계산에서 빠졌습니다.`}
-      className="inline-flex items-center gap-1 text-micro px-1.5 py-0.5 rounded border border-line bg-raised text-fg-dim whitespace-nowrap"
-    >
-      <AlertTriangle size={10} className="text-accent" />
-      {label}
-    </span>
-  );
-}

@@ -51,10 +51,12 @@ funds/popular.json            분기별 인기 보유/신규 매수/청산 (인�
 `pipeline/.cache/13f/` 에만 있고 아래 두 집계 파일의 입력으로만 쓰인다.
 
 `performance.json`: `{ asOf, funds:[{ cik, name, manager, category, inception, inceptionDate,
-quarters, aum, positions, ret1y, cagr3y, cagr5y, cagrInception, totalReturn, coverage,
-reliability, curve:[[date, index]] }] }`
+latest, filedAt, active, quarters, aum, positions, ret1y, cagr3y, cagr5y, cagrInception,
+totalReturn, coverage, reliability, curve:[[date, index]] }] }`
 - 공시일 기준 분기 리밸런싱을 가정한 **추정** 롱온리 성과. 실제 펀드 수익률이 아니다.
-- `coverage` = 티커 매핑된 보유분의 가치 비중, `reliability` = `high|mid|low` (UI 는 mid/low 만 표시).
+- `filedAt` = 마지막 분기(`latest`)를 SEC 에 실제로 신고한 날. 분기말이 아니다 — 표에 이 날짜를 보여준다.
+- `coverage` = 티커 매핑된 보유분의 가치 비중, `reliability` = `high|mid|low`
+  (계산은 유지하되 **UI 에서는 쓰지 않는다** — 표의 그 자리는 `filedAt` 이 차지한다).
 - `curve` 는 월말 샘플, 시작값 1.0.
 
 `popular.json`: `{ asOf, topN, broadThreshold, quarters:[{ quarter, filed, total,

@@ -210,7 +210,7 @@ def ensure_quarter(cik10: str, entry: dict) -> dict | None:
     """
     cached = load_cached(cik10, entry["quarter"])
     if cached:
-        return cached
+        return io.normalize_13f_units(cached)
 
     for cand in entry["candidates"][:MAX_CANDIDATES]:
         rows = aggregate(fetch_info_table(int(cik10), cand["accession"]))
@@ -226,8 +226,8 @@ def ensure_quarter(cik10: str, entry: dict) -> dict | None:
                 for c, v in sorted(rows.items(), key=lambda kv: -kv[1]["value"])
             ],
         }
-        save_cached(obj)
-        return obj
+        save_cached(obj)  # 캐시는 SEC 원본 그대로 — 단위 보정은 읽는 쪽에서만
+        return io.normalize_13f_units(obj)
     return None
 
 
